@@ -110,6 +110,11 @@ body.uvmode #dark{opacity:1;background:radial-gradient(circle 280px at var(--fx,
 #resetBtn:hover{opacity:1;border-color:rgba(164,84,74,.8);background:rgba(126,31,31,.18);color:#e6b0a8}
 #resetBtn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.8}
 #saveHint{margin-top:5px;font-size:8px;letter-spacing:.12em;color:rgba(201,178,140,.4)}
+/* mobiele reset-knop in de dock: alleen zichtbaar op touch/smal scherm mét save (caseTag is daar verborgen) */
+#btnReset2{display:none}
+#btnReset2 svg{stroke:#c98f88!important}
+#btnReset2 span{color:#c98f88}
+@media (max-width:820px), (pointer:coarse){ body.hasSave #btnReset2{display:flex} }
 #confirmWrap{position:fixed;inset:0;z-index:400;display:none;align-items:center;justify-content:center;background:rgba(6,9,14,.78);backdrop-filter:blur(6px)}
 #confirmWrap.open{display:flex}
 #confirmBox{max-width:400px;margin:24px;padding:26px 28px;border-radius:14px;background:linear-gradient(160deg,#1a2230,#111823);border:1px solid rgba(164,84,74,.35);box-shadow:0 24px 70px rgba(0,0,0,.6)}
@@ -1068,6 +1073,9 @@ body{background:#22304a}
     </button>
     <button class="dockBtn locked" id="btnUV" title="UV-lamp (U)">
       <svg viewBox="0 0 24 24"><path d="M7 3h10l-2.5 5v10a2.5 2.5 0 01-5 0V8L7 3z"/><path d="M10 12l2 2 2-2"/></svg><span>UV</span>
+    </button>
+    <button class="dockBtn" id="btnReset2" title="Onderzoek opnieuw beginnen">
+      <svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4h-4"/></svg><span>OPNIEUW</span>
     </button>
     <div id="accuseDock">
       <button class="dockBtn locked" id="btnAccuse" title="Aanklacht">
@@ -3438,9 +3446,11 @@ runIntro();
   function showSaveUI(){
     const r=$('resetBtn'); if(r) r.style.display='inline-flex';
     const h=$('saveHint'); if(h) h.style.display='block';
+    document.body.classList.add('hasSave');
   }
   const cw=$('confirmWrap');
   $('resetBtn')&&$('resetBtn').addEventListener('click',()=>cw&&cw.classList.add('open'));
+  $('btnReset2')&&$('btnReset2').addEventListener('click',()=>cw&&cw.classList.add('open'));
   $('confirmCancel')&&$('confirmCancel').addEventListener('click',()=>cw&&cw.classList.remove('open'));
   cw&&cw.addEventListener('click',e=>{ if(e.target===cw) cw.classList.remove('open'); });
   $('confirmOk')&&$('confirmOk').addEventListener('click',()=>{
