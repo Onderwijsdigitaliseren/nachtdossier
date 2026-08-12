@@ -3,9 +3,14 @@
 Een schil rond losse interactieve moordmysteries. Elke zaak is een op zichzelf staand HTML-bestand; `index.html` is alleen de recherchekamer die ernaar linkt.
 
 ## Zaken
+**Kast I · Moordzaken** (verhaalgedreven)
 - `MERIDIAAN___Nachtdossier44-C.html` — Villa Meridiaan
 - `nachtfrequentie.html` — Nachtfrequentie (92.4 FM)
 - `nachttrein212.html` — Nachttrein 212 (Amsterdam · Wenen)
+
+**Kast II · Puzzelkamers** (puzzelgedreven)
+- `schakelkamer.html` — De Schakelkamer (Dossier P1, 1963)
+- `ravenhorst.html` — Ravenhorst (landhuis)
 
 ## Online zetten (GitHub Pages)
 1. Zet alle bestanden in de root van je repo.
@@ -16,8 +21,10 @@ Een schil rond losse interactieve moordmysteries. Elke zaak is een op zichzelf s
 Open `index.html`, zoek de `ZAKEN`-array bovenin de `<script>` en voeg één object toe:
 
 ```js
-{ nummer: "Zaak 03", titel: "...", omschrijving: "...", bestand: "jouwbestand.html", stempel: "Onopgelost" }
+{ type: "verhaal", nummer: "Zaak 03", titel: "...", omschrijving: "...", bestand: "jouwbestand.html", stempel: "Onopgelost" }
 ```
+
+`type` bepaalt de kast: `"verhaal"` (Moordzaken) of `"puzzel"` (Puzzelkamers).
 
 Zet het bijbehorende `.html`-bestand ernaast. Klaar.
 

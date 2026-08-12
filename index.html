@@ -114,11 +114,47 @@ body:not(.lamp-aan) #kaart{transform:rotate(-.6deg) translateY(10px)}
 #dossiers{
   position:relative;
   z-index:2;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  width:min(980px,100%);
+  margin:0 auto;
+}
+.kastRij{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(290px,1fr));
   gap:52px 44px;
-  width:min(980px,100%);
-  margin:0 auto;
+}
+.kastRij + .etiket{margin-top:9vh}
+.etiket{
+  margin:0 auto 5vh;
+  text-align:center;
+  opacity:0;
+  transition:opacity 1.2s ease .9s;
+}
+body.lamp-aan .etiket{opacity:1}
+.etiketLabel{
+  display:inline-block;
+  padding:8px 26px 7px;
+  font-size:12.5px;
+  font-weight:700;
+  letter-spacing:.3em;
+  text-transform:uppercase;
+  color:#e8d9ae;
+  background:linear-gradient(180deg, rgba(156,132,82,.32), rgba(156,132,82,.16));
+  border:1px solid rgba(156,132,82,.55);
+  border-radius:3px;
+  box-shadow:0 4px 14px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.12);
+}
+.etiketUitleg{
+  margin-top:14px;
+  font-size:12.5px;
+  letter-spacing:.06em;
+  line-height:1.6;
+  color:rgba(217,188,130,.55);
+  max-width:52ch;
+  margin-left:auto;
+  margin-right:auto;
 }
 .dossier{
   position:relative;
@@ -344,10 +380,12 @@ const KOFFIE_LINK = "https://ko-fi.com/kellievdk";
 
 /* ================================================================
    ZAKEN — voeg hier een zaak toe: één object, klaar.
+   type: "verhaal" (moordzaak) of "puzzel" (puzzelkamer).
    bestand = relatief pad naar het losse html-bestand (GitHub Pages).
    ================================================================ */
 const ZAKEN = [
   {
+    type: "verhaal",
     nummer: "Dossier 44-C · 03:12",
     titel: "Villa Meridiaan",
     omschrijving: "Elias Verhoeven ligt onderaan zijn keldertrap. Het m\u00f3\u00e9t een ongeluk lijken. Jij hebt tot zonsopkomst om te bewijzen dat het dat niet was.",
@@ -355,6 +393,7 @@ const ZAKEN = [
     stempel: "Onopgelost"
   },
   {
+    type: "verhaal",
     nummer: "Zaak 92.4 · 03:12",
     titel: "Nachtfrequentie",
     omschrijving: "Anthracietstad, de nacht van 14 op 15 februari. Iedereen in dit gebouw heeft iets te verbergen \u2014 en de radio blijft doorspelen op 92.4 FM.",
@@ -362,12 +401,35 @@ const ZAKEN = [
     stempel: "Onopgelost"
   },
   {
+    type: "verhaal",
     nummer: "Zaak 212 · trein",
     titel: "Nachttrein 212",
     omschrijving: "Amsterdam C.S. naar Wenen Westbahnhof. Eén passagier dineert alleen, vraagt om \u201chet gebruikelijke\u201d \u2014 en haalt de ochtend niet. Elke coup\u00e9 een alibi.",
     bestand: "nachttrein212.html",
     stempel: "Onopgelost"
+  },
+  {
+    type: "puzzel",
+    nummer: "Dossier P1 · 1963",
+    titel: "De Schakelkamer",
+    omschrijving: "Het Stille Atelier, najaar 1963 — een heropende zaak uit het Centraal Archief. Documenten, codes en feiten die je zelf moet noteren. Zo’n zestig minuten kraken.",
+    bestand: "schakelkamer.html",
+    stempel: "Heropend"
+  },
+  {
+    type: "puzzel",
+    nummer: "Zaak 07 · landhuis",
+    titel: "Ravenhorst",
+    omschrijving: "Landhuis Ravenhorst geeft zijn geheimen niet zomaar prijs. Elk vertrek verbergt een raadsel — van romeinse cijfers tot een krant die met opzet zo is neergelegd.",
+    bestand: "ravenhorst.html",
+    stempel: "Onopgelost"
   }
+];
+
+/* Kasten: de twee afdelingen van het archief */
+const KASTEN = [
+  { type: "verhaal", label: "Kast I · Moordzaken", uitleg: "Voor wie het verhaal in wil: verhoor de verdachten, vind het bewijs, dien je aanklacht in." },
+  { type: "puzzel", label: "Kast II · Puzzelkamers", uitleg: "Voor wie liever kraakt dan verhoort: codes, documenten en deuren die niet zomaar opengaan." }
 ];
 
 function maakDossier(zaak){
@@ -397,14 +459,33 @@ function maakLegeMap(){
   return d;
 }
 
+function maakEtiket(kast){
+  const e = document.createElement("div");
+  e.className = "etiket";
+  e.innerHTML = '<div class="etiketLabel"></div><div class="etiketUitleg"></div>';
+  e.querySelector(".etiketLabel").textContent = kast.label;
+  e.querySelector(".etiketUitleg").textContent = kast.uitleg;
+  return e;
+}
+
 function renderArchief(){
   const houder = document.getElementById("dossiers");
-  ZAKEN.forEach(function(z){ houder.appendChild(maakDossier(z)); });
-  houder.appendChild(maakLegeMap());
+  KASTEN.forEach(function(kast){
+    const zaken = ZAKEN.filter(function(z){ return z.type === kast.type; });
+    if (!zaken.length) return;
+    houder.appendChild(maakEtiket(kast));
+    const rij = document.createElement("div");
+    rij.className = "kastRij";
+    zaken.forEach(function(z){ rij.appendChild(maakDossier(z)); });
+    houder.appendChild(rij);
+  });
+  const laatste = houder.querySelector(".kastRij:last-of-type");
+  if (laatste) laatste.appendChild(maakLegeMap());
 }
 
 window.renderArchief = renderArchief;
 window.ZAKEN = ZAKEN;
+window.KASTEN = KASTEN;
 
 document.addEventListener("DOMContentLoaded", function(){
   renderArchief();
