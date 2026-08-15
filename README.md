@@ -11,6 +11,7 @@ Een schil rond losse interactieve moordmysteries. Elke zaak is een op zichzelf s
 **Kast II · Puzzelkamers** (puzzelgedreven)
 - `schakelkamer.html` — De Schakelkamer (Dossier P1, 1963)
 - `ravenhorst.html` — Ravenhorst (landhuis)
+- `de-lichttafel.html` — De Lichttafel (sterrenwacht, 1957)
 
 ## Online zetten (GitHub Pages)
 1. Zet alle bestanden in de root van je repo.

@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
+<title>De Lichttafel — De Gedoofde Ster</title>
+<style>
+:root{
+  --nacht:#0a1322; --nacht2:#050b16; --staal:#152238;
+  --papier:#ece2c8; --papier2:#e2d5b2; --inkt:#26211a; --inktlicht:#5c523d;
+  --rood:#a4322a; --roodstempel:rgba(164,50,42,.85);
+  --messing:#b98f4a; --maan:#c7d9ec; --lampgroen:#3d6b57; --glas:#9db8cf;
+  --lijn:#c3b795; --schaduw:rgba(0,0,0,.6);
+  --serif:Georgia,'Times New Roman',serif;
+  --mono:'Courier New',Courier,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;height:100dvh;overscroll-behavior:none}
+body{position:fixed;inset:0;overflow:hidden;font-family:var(--serif);color:var(--inkt);
+  background:
+    radial-gradient(ellipse 70% 45% at 72% 0%, rgba(199,217,236,.10), transparent 60%),
+    radial-gradient(ellipse 120% 90% at 50% 118%, #02060d 30%, transparent 72%),
+    linear-gradient(168deg,var(--nacht) 0%,var(--nacht2) 100%)}
+#hemel{position:fixed;inset:0;pointer-events:none;z-index:0}
+#hemel .ster{position:absolute;width:2px;height:2px;border-radius:50%;background:var(--maan);
+  animation:twinkel var(--d,4s) ease-in-out infinite}
+#hemel .komeet{position:absolute;top:9%;left:64%;width:120px;height:2px;transform:rotate(-24deg);
+  background:linear-gradient(90deg,rgba(199,217,236,.85),transparent);border-radius:2px;
+  filter:blur(.4px);animation:gloei 9s ease-in-out infinite}
+#hemel .komeet::before{content:"";position:absolute;left:-3px;top:-2px;width:6px;height:6px;border-radius:50%;
+  background:#eef5fc;box-shadow:0 0 10px 3px rgba(199,217,236,.7)}
+@keyframes twinkel{0%,100%{opacity:.25}50%{opacity:.95}}
+@keyframes gloei{0%,100%{opacity:.5}50%{opacity:1}}
+#spleet{position:fixed;top:0;left:12%;width:16%;height:100%;pointer-events:none;z-index:0;
+  background:linear-gradient(90deg,transparent,rgba(199,217,236,.05) 30%,rgba(199,217,236,.09) 50%,rgba(199,217,236,.05) 70%,transparent);
+  animation:spleetdrift 60s linear infinite alternate}
+@keyframes spleetdrift{from{transform:translateX(-6vw)}to{transform:translateX(14vw)}}
+#app{position:fixed;inset:0;display:flex;flex-direction:column;z-index:1;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+#schermen{position:relative;flex:1;min-height:0;display:flex;flex-direction:column}
+.scherm{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
+.scherm.actief{display:flex}
+/* ---------- kop ---------- */
+#kop{flex:0 0 auto;color:var(--maan);border-bottom:1px solid rgba(185,143,74,.3);
+  background:linear-gradient(180deg,rgba(2,6,13,.5),rgba(2,6,13,.2));backdrop-filter:blur(2px)}
+#kop .titelrij{display:flex;align-items:baseline;gap:.6rem;padding:.5rem .9rem .15rem;flex-wrap:wrap}
+#kop h1{font-size:1.04rem;letter-spacing:.14em;text-transform:uppercase;font-weight:normal;color:var(--messing)}
+#kop .sub{font-size:.76rem;opacity:.6;letter-spacing:.08em}
+#kop .knoppen{display:flex;gap:.45rem;overflow-x:auto;padding:.3rem .9rem .55rem;
+  scrollbar-width:none;-ms-overflow-style:none}
+#kop .knoppen::-webkit-scrollbar{display:none}
+.hudknop{flex:0 0 auto;font-family:var(--mono);font-size:.85rem;letter-spacing:.05em;color:var(--maan);
+  background:rgba(199,217,236,.06);border:1px solid rgba(185,143,74,.45);border-radius:3px;
+  min-height:44px;padding:.4rem .8rem;cursor:pointer;transition:background .2s}
+.hudknop:hover{background:rgba(185,143,74,.2)}
+.hudknop.accent{border-color:var(--rood);color:#f0c9c4}
+/* ---------- omslag ---------- */
+#omslag{align-items:center;justify-content:center;display:none}
+#omslag.actief{display:flex}
+#map{position:relative;width:min(92vw,520px);color:#e7dfc8;text-align:center;
+  background:linear-gradient(178deg,#2a3348 0%,#1a2438 55%,#101a2e 100%);
+  border-top:14px solid #3c4a66;
+  box-shadow:0 30px 60px var(--schaduw),0 -4px 0 #0a1120,inset 0 2px 0 rgba(199,217,236,.15);
+  padding:1.4rem 1.4rem 1.7rem}
+#map::before{content:"";position:absolute;left:8%;right:8%;top:-9px;height:4px;background:var(--messing);opacity:.8}
+#map::after{content:"GLASPLATEN \2014  BREEKBAAR";position:absolute;top:-32px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.3em;color:rgba(199,217,236,.55);white-space:nowrap}
+#map .hoek{position:absolute;width:22px;height:22px;border:3px solid var(--messing)}
+#map .hoek.lb{left:-3px;bottom:-3px;border-top:none;border-right:none}
+#map .hoek.rb{right:-3px;bottom:-3px;border-top:none;border-left:none}
+#map .etiket{margin:0 auto 1rem;width:min(86%,360px);background:linear-gradient(175deg,var(--papier),var(--papier2));
+  color:var(--inkt);padding:1rem .9rem 1.1rem;border-radius:2px;transform:rotate(-.6deg);
+  box-shadow:0 6px 16px rgba(0,0,0,.5)}
+#map .archief{font-family:var(--mono);font-size:.66rem;letter-spacing:.25em;color:var(--inktlicht)}
+#map h2{font-size:1.45rem;margin:.6rem 0 .15rem;letter-spacing:.05em}
+#map .zaaknr{font-family:var(--mono);font-size:.78rem;color:var(--inktlicht);margin-bottom:.7rem}
+#map .stempel{display:inline-block;font-family:var(--mono);font-size:.78rem;letter-spacing:.2em;
+  color:var(--roodstempel);border:2px solid var(--roodstempel);padding:.3rem .8rem;border-radius:2px;
+  transform:rotate(-6deg)}
+#map p{font-size:.85rem;line-height:1.55;opacity:.9;margin:0 auto 1.2rem;max-width:400px}
+.grootknop{font-family:var(--serif);font-size:1.08rem;min-height:48px;background:var(--rood);color:#fbeee9;border:none;
+  border-radius:3px;padding:.75rem 1.6rem;cursor:pointer;letter-spacing:.06em;
+  box-shadow:0 4px 14px rgba(0,0,0,.4);transition:transform .15s}
+.grootknop:hover{transform:translateY(-2px)}
+/* ---------- lichttafel (bureau) ---------- */
+#bureauInhoud{flex:1;overflow-y:auto;padding:.8rem .6rem 2.2rem;-webkit-overflow-scrolling:touch}
+#intro-strook{max-width:720px;margin:0 auto .8rem;color:var(--maan);font-size:.85rem;line-height:1.5;
+  opacity:.85;border-left:3px solid var(--messing);padding:.4rem .8rem;background:rgba(2,6,13,.4);border-radius:0 4px 4px 0}
+#tafelWrap{max-width:min(97vw,820px);margin:0 auto}
+#tafelWrap svg{width:100%;height:auto;display:block}
+.fiche{cursor:pointer}
+.fiche:hover .ficheV{filter:brightness(1.07)}
+.fiche.dicht{opacity:.55}
+/* ---------- bewijzenstrip ---------- */
+#strip{flex:0 0 auto;display:flex;gap:.4rem;align-items:center;padding:.4rem .8rem .45rem;
+  background:linear-gradient(180deg,rgba(185,143,74,.16),rgba(2,6,13,.35));border-bottom:2px solid rgba(185,143,74,.45);
+  overflow-x:auto;scrollbar-width:none}
+#strip::-webkit-scrollbar{display:none}
+#strip .chip{flex:0 0 auto;font-family:var(--mono);font-size:.78rem;min-height:44px;min-width:44px;
+  display:flex;align-items:center;justify-content:center;padding:0 .55rem;border-radius:3px;cursor:pointer;
+  color:rgba(199,217,236,.5);border:1px solid rgba(199,217,236,.25);background:rgba(199,217,236,.04)}
+#strip .chip.aan{color:#ffe9bd;border-color:var(--messing);background:rgba(185,143,74,.22);
+  box-shadow:0 0 10px rgba(185,143,74,.25)}
+#strip .striplabel{flex:0 0 auto;font-family:var(--mono);font-size:.68rem;letter-spacing:.15em;color:rgba(199,217,236,.55);padding-right:.2rem}
+/* ---------- overlays & documenten ---------- */
+.overlay{position:absolute;inset:0;display:none;flex-direction:column;background:rgba(2,6,13,.84);
+  backdrop-filter:blur(3px);z-index:20}
+.overlay.actief{display:flex}
+.vel{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;margin:.7rem auto;width:min(94vw,780px);
+  background:
+    radial-gradient(circle at 84% 4%, rgba(120,95,45,.09), transparent 32%),
+    linear-gradient(175deg,var(--papier) 0%,var(--papier2) 100%);
+  border-radius:3px;box-shadow:0 20px 50px rgba(0,0,0,.65);padding:1.35rem 1.25rem 2.2rem;position:relative}
+.velkop{display:flex;align-items:center;gap:.7rem;margin:-1.35rem -1.25rem .9rem;
+  padding:.7rem 1rem .6rem 1.25rem;background:linear-gradient(90deg,#16233a,#1d2c46);
+  border-bottom:3px solid var(--messing);color:var(--maan);border-radius:3px 3px 0 0}
+.velkop .dnr{font-family:var(--mono);font-size:.68rem;letter-spacing:.18em;color:var(--messing)}
+.velkop h2{font-size:1.06rem;flex:1;line-height:1.25;font-weight:normal;letter-spacing:.03em}
+.sluit{font-family:var(--mono);font-size:1rem;min-height:44px;min-width:44px;background:rgba(199,217,236,.08);
+  border:1px solid rgba(185,143,74,.6);border-radius:50%;cursor:pointer;color:var(--maan);line-height:1}
+.doctekst{font-size:.92rem;line-height:1.62}
+.doctekst p{margin-bottom:.75rem}
+.doctekst h4{margin:.9rem 0 .35rem;font-size:.88rem;letter-spacing:.06em;text-transform:uppercase;color:var(--inktlicht)}
+.briefhoofd{display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;font-family:var(--mono);
+  font-size:.68rem;letter-spacing:.1em;color:var(--inktlicht);border-bottom:1px solid var(--lijn);
+  padding-bottom:.45rem;margin-bottom:.8rem}
+.stempelRood{display:inline-block;font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;color:var(--roodstempel);
+  border:2px solid var(--roodstempel);padding:.2rem .55rem;transform:rotate(-3deg);border-radius:2px}
+.citaat{font-style:italic;background:rgba(120,95,45,.08);border-left:3px solid var(--messing);
+  padding:.5rem .7rem;margin:.55rem 0;border-radius:0 3px 3px 0;line-height:1.55}
+.citaat .wie{display:block;font-style:normal;font-family:var(--mono);font-size:.68rem;letter-spacing:.18em;
+  color:var(--inktlicht);margin-bottom:.2rem}
+.mono{font-family:var(--mono);font-size:.84rem}
+.docTabel{width:100%;border-collapse:collapse;font-size:.8rem;margin:.5rem 0}
+.docTabel th,.docTabel td{border:1px solid var(--lijn);padding:.32rem .4rem;text-align:left;vertical-align:top}
+.docTabel th{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;background:rgba(120,95,45,.1)}
+.machineschrift{font-family:var(--mono);font-size:.85rem;line-height:1.7}
+/* ---------- puzzelblokken ---------- */
+.puzzelblok{margin:1rem 0;padding:.85rem .8rem;border:1px dashed var(--inktlicht);border-radius:4px;background:rgba(255,255,255,.25)}
+.puzzelblok h4{margin:0 0 .5rem;font-size:.9rem;letter-spacing:.05em}
+.plabel{display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;color:var(--inktlicht);margin:.6rem 0 .25rem}
+.pinvoer{font-family:var(--mono);font-size:16px;width:100%;max-width:280px;padding:.5rem .6rem;border:1px solid var(--inktlicht);
+  border-radius:3px;background:#f7f0dd;color:var(--inkt)}
+.pselect{font-family:var(--serif);font-size:16px;padding:.5rem .5rem;border:1px solid var(--inktlicht);border-radius:3px;
+  background:#f7f0dd;color:var(--inkt);max-width:100%}
+.pknop{display:inline-block;margin-top:.7rem;font-family:var(--serif);font-size:.95rem;min-height:44px;background:var(--inkt);
+  color:var(--papier);border:none;border-radius:3px;padding:.55rem 1.1rem;cursor:pointer;letter-spacing:.04em}
+.pknop.secundair{background:none;color:var(--inkt);border:1px solid var(--inktlicht)}
+.pknop:disabled{opacity:.45;cursor:default}
+.uitkomst{margin-top:.6rem;font-size:.88rem;min-height:1.2em}
+.uitkomst.goed{color:#2f5c42;font-weight:bold}
+.uitkomst.fout{color:var(--rood)}
+.feitknop{margin-top:.6rem;background:var(--lampgroen)!important;color:#eaf5ee!important}
+/* roosters */
+.rooster{border-collapse:collapse;margin:.5rem auto;user-select:none}
+.rooster td{border:1px solid var(--inktlicht);text-align:center;vertical-align:middle;
+  width:clamp(24px,7.2vw,38px);height:clamp(24px,7.2vw,38px);position:relative;background:#f7f0dd}
+.rooster.negen td{width:clamp(22px,9.6vw,40px);height:clamp(22px,9.6vw,40px)}
+.rooster td input{width:100%;height:100%;border:none;background:transparent;text-align:center;
+  font-family:var(--mono);font-size:16px;color:#1c3f8c;outline:none;padding:0}
+.rooster td.vast{background:#e8dcba;font-family:var(--mono);font-weight:bold}
+.rooster td.fout,.rooster td.fout input{background:#f2c7bd!important}
+.rooster td.blok-r{border-right:2.5px solid var(--inkt)}
+.rooster td.blok-b{border-bottom:2.5px solid var(--inkt)}
+.rooster td.onlees{background:repeating-linear-gradient(45deg,#3a332a 0 5px,#2c2620 5px 10px)}
+.rooster td.onlees input{color:#f0e6cf}
+.rooster td.ster::after{content:"";position:absolute;inset:2px;border:2px solid var(--rood);border-radius:50%;pointer-events:none}
+.rooster td .kooisom{position:absolute;top:0;left:1px;font-size:.5rem;font-family:var(--mono);color:#7a4a20;line-height:1}
+.rooster td.kooi-t{border-top:2.5px dotted #7a4a20}
+.rooster td.kooi-l{border-left:2.5px dotted #7a4a20}
+.rooster td.kooi-b2{border-bottom:2.5px dotted #7a4a20}
+.rooster td.kooi-r2{border-right:2.5px dotted #7a4a20}
+.aslabel{font-family:var(--mono);font-size:.56rem;color:var(--inktlicht);letter-spacing:.02em}
+.aslabel.rij{text-align:right;padding-right:.3rem;border:none!important;background:none!important;width:auto!important}
+.aslabel.kol{writing-mode:vertical-rl;transform:rotate(180deg);height:auto!important;border:none!important;background:none!important;padding:.2rem 0}
+/* murdoku symbolen */
+.symknoppen{display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap;margin:.5rem 0}
+.symknoppen button{min-width:44px;min-height:44px;font-size:1.15rem;border:1px solid var(--inktlicht);background:#f7f0dd;border-radius:3px;cursor:pointer}
+.symknoppen button.actief{background:var(--inkt);color:var(--papier)}
+.rooster td.symcel{cursor:pointer;font-size:1.05rem}
+.rooster td.diag{box-shadow:inset 0 0 0 2px rgba(185,143,74,.8)}
+/* nonogram */
+.nono td{cursor:pointer;width:clamp(20px,6.4vw,32px);height:clamp(20px,6.4vw,32px)}
+.nono td.zwart{background:#26211a}
+.nono td.clue{font-family:var(--mono);font-size:.6rem;background:none;border:none;white-space:pre;line-height:1.15;
+  vertical-align:bottom;text-align:center;padding:1px;width:auto;height:auto}
+.nono td.clue.rij{text-align:right;vertical-align:middle;padding-right:.3rem}
+/* woordzoeker */
+.wz td{cursor:pointer;width:clamp(19px,6.4vw,30px);height:clamp(19px,6.4vw,30px);font-family:var(--mono);font-size:.82rem}
+.wz td.kies{background:#d9e6f2}
+.wz td.gevonden{background:#cfe0cf;color:#2f5c42;font-weight:bold}
+.wz-lijst{display:flex;flex-wrap:wrap;gap:.35rem;margin:.5rem 0;font-family:var(--mono);font-size:.72rem}
+.wz-lijst span{border:1px solid var(--lijn);padding:.18rem .4rem;border-radius:3px}
+.wz-lijst span.af{text-decoration:line-through;opacity:.5}
+/* logigram */
+.lg td{cursor:pointer;font-size:1rem;font-family:var(--mono)}
+.lg td.kruis{color:var(--rood)}
+.lg td.vink{color:#2f5c42;font-weight:bold}
+/* kruiswoord (zweeds) */
+.kwrij{display:flex;align-items:center;gap:.5rem;margin:.4rem 0;flex-wrap:wrap}
+.kwrij .kwnr{font-family:var(--mono);font-size:.72rem;width:1.4rem;color:var(--inktlicht)}
+.kwrij .kwclue{flex:1 1 220px;font-size:.85rem;font-style:italic}
+.kwvakjes{display:flex;gap:2px}
+.kwvakjes input{width:clamp(20px,6vw,28px);height:clamp(26px,7vw,34px);text-align:center;border:1px solid var(--inktlicht);
+  background:#f7f0dd;font-family:var(--mono);font-size:16px;text-transform:uppercase;padding:0}
+.kwvakjes input.merk{background:#e8d9a8;border:2px solid var(--messing)}
+/* chrono */
+.strook{display:flex;align-items:center;gap:.5rem;border:1px solid var(--inktlicht);border-radius:3px;
+  background:#f5edd8;margin:.35rem 0;padding:.45rem .55rem;font-size:.84rem;line-height:1.4}
+.strook .pijlen{display:flex;flex-direction:column;gap:.2rem}
+.strook .pijlen button{min-width:44px;min-height:32px;border:1px solid var(--inktlicht);background:#efe4c6;border-radius:3px;cursor:pointer}
+.strook .snr{font-family:var(--mono);font-size:.66rem;color:var(--inktlicht)}
+/* verschillen */
+.verschilWrap{position:relative;margin:.5rem 0}
+.verschilWrap svg{width:100%;height:auto;display:block;border:1px solid var(--inktlicht);border-radius:3px;background:#101a2a}
+.vscTeller{font-family:var(--mono);font-size:.78rem;margin-top:.35rem}
+/* kluis */
+.kluisSchijven{display:flex;gap:.6rem;justify-content:center;margin:.7rem 0;flex-wrap:wrap}
+.kluisSchijf{text-align:center}
+.kluisSchijf label{display:block;font-family:var(--mono);font-size:.62rem;letter-spacing:.15em;color:var(--inktlicht);margin-bottom:.25rem}
+.kluisSchijf input{width:58px;height:58px;text-align:center;font-family:var(--mono);font-size:1.5rem;
+  border:2px solid var(--messing);border-radius:50%;background:#141e30;color:#ffe9bd}
+/* hints */
+.hintbalk{margin-top:.9rem;border-top:1px dotted var(--inktlicht);padding-top:.5rem}
+.hintbalk button{font-family:var(--mono);font-size:.72rem;min-height:44px;background:none;border:1px solid var(--inktlicht);
+  border-radius:3px;padding:.3rem .6rem;cursor:pointer;margin-right:.4rem;margin-top:.25rem;color:var(--inkt)}
+.hinttekst{font-size:.84rem;font-style:italic;background:rgba(61,107,87,.1);border-left:3px solid var(--lampgroen);
+  padding:.4rem .6rem;margin-top:.45rem;border-radius:0 3px 3px 0}
+/* matrix */
+#matrixVel .feitkaart{border:1px solid var(--lijn);border-left:4px solid var(--lampgroen);border-radius:3px;
+  padding:.5rem .6rem;margin:.4rem 0;font-size:.85rem;line-height:1.5;background:rgba(255,255,255,.35)}
+#matrixVel .fid{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;color:var(--lampgroen);font-weight:bold;margin-right:.35rem}
+.aslijst{display:flex;flex-wrap:wrap;gap:.35rem;margin:.4rem 0 .9rem}
+.aslijst button{font-family:var(--serif);font-size:.84rem;min-height:44px;border:1px solid var(--inktlicht);border-radius:3px;
+  background:#f5edd8;padding:.35rem .6rem;cursor:pointer;color:var(--inkt)}
+.aslijst button.streep{text-decoration:line-through;opacity:.45;background:#e4d7b4}
+/* conclusie */
+.conclrij{margin:.7rem 0}
+.conclrij label{display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;color:var(--inktlicht);margin-bottom:.25rem}
+.conclrij select{width:100%;max-width:420px}
+/* epiloog */
+.epi-stempel{display:inline-block;font-family:var(--mono);font-size:1.05rem;letter-spacing:.35em;color:var(--roodstempel);
+  border:3px double var(--roodstempel);padding:.45rem 1rem;transform:rotate(-4deg);margin:.8rem 0}
+/* toast & stempel-fx */
+#toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);
+  background:rgba(12,20,34,.95);color:var(--maan);font-size:.84rem;padding:.55rem .9rem;border-radius:4px;
+  border:1px solid rgba(185,143,74,.5);opacity:0;pointer-events:none;transition:all .3s;z-index:60;max-width:88vw;text-align:center}
+#toast.zien{opacity:1;transform:translateX(-50%) translateY(0)}
+#stempelFx{position:fixed;inset:0;display:none;align-items:center;justify-content:center;pointer-events:none;z-index:70}
+#stempelFx.zien{display:flex}
+#stempelFx div{font-family:var(--mono);font-size:clamp(1.1rem,5vw,1.8rem);letter-spacing:.3em;color:var(--roodstempel);
+  border:4px double var(--roodstempel);padding:.7rem 1.4rem;transform:rotate(-8deg) scale(3);opacity:0;
+  animation:klap .55s cubic-bezier(.2,1.6,.4,1) forwards;background:rgba(236,226,200,.9);border-radius:3px}
+@keyframes klap{to{transform:rotate(-8deg) scale(1);opacity:1}}
+/* resetdialoog */
+#resetDlg .vel{max-width:440px;flex:0 1 auto;margin:auto}
+@media (min-width:700px){
+  .rooster td{width:38px;height:38px}
+  .rooster.negen td{width:40px;height:40px}
+}
+</style>
+</head>
+<body>
+<div id="hemel"></div><div id="spleet"></div>
+<div id="app">
+<header id="kop">
+  <div class="titelrij"><h1>De Lichttafel</h1><span class="sub">De Gedoofde Ster &middot; nachtdossier</span></div>
+  <nav class="knoppen">
+    <button class="hudknop" id="knopMatrix">Bewijzen</button>
+    <button class="hudknop accent" id="knopConclusie">Conclusie</button>
+    <button class="hudknop" id="knopGeluid">Geluid: uit</button>
+    <button class="hudknop" id="knopReset">Opnieuw</button>
+  </nav>
+</header>
+<div id="schermen">
+  <section id="omslag" class="scherm actief">
+    <div id="map">
+      <span class="hoek lb"></span><span class="hoek rb"></span>
+      <div class="etiket">
+        <div class="archief">RIJKSRECHERCHE &middot; KOUDE ZAKEN</div>
+        <h2>De Gedoofde Ster</h2>
+        <div class="zaaknr">zaak 57-L1 &middot; Rijkssterrenwacht &ldquo;Helderoord&rdquo; &middot; april 1957</div>
+        <div class="stempel">ONOPGELOST</div>
+      </div>
+      <p>In de nacht dat heel het land naar de komeet keek, werd de directeur van de sterrenwacht dood
+      aangetroffen. Vijf medewerkers waren binnen de muren. De doos met stukken is nooit teruggelegd.
+      U schuift het deksel open. De lichttafel brandt al.</p>
+      <button class="grootknop" id="openZaak">Schuif het deksel open</button>
+    </div>
+  </section>
+  <section id="bureau" class="scherm">
+    <div id="strip"><span class="striplabel">FEITEN</span></div>
+    <div id="bureauInhoud">
+      <div id="intro-strook">De stukken liggen uitgestald op de lichttafel van het platenarchief.
+      Tik een stuk aan om het te lezen. Elke opgeloste bijlage levert precies &eacute;&eacute;n feit voor de bewijsmatrix.</div>
+      <div id="tafelWrap"></div>
+    </div>
+  </section>
+</div>
+<div class="overlay" id="docOverlay"><div class="vel" id="docVel"></div></div>
+<div class="overlay" id="matrixOverlay"><div class="vel" id="matrixVel"></div></div>
+<div class="overlay" id="conclusieOverlay"><div class="vel" id="conclusieVel"></div></div>
+<div class="overlay" id="resetDlg"><div class="vel" id="resetVel"></div></div>
+</div>
+<div id="toast"></div>
+<div id="stempelFx"><div id="stempelTekst"></div></div>
+<script>
+"use strict";
+/* ===== DATA (gecertificeerd door solver.py/gen.py) ===== */
+const SLEUTEL='lichttafel_v1';
+const ASSEN={"dader":["Nora Feldkamp","Viktor Steenwijk","Lodewijk Brand","Ida Rademaker","Meindert Roozeboom"],"locatie":["rekenkamer","koepelzaal","dakplatform","instrumentwerkplaats","platenarchief"],"voorwerp":["gietijzeren statiefvoet","messing contragewicht","glazen barometerbuis","eiken kaartenlat","koperen oliekan"],"motief":["afgewezen benoeming","verduistering van fondsen","speelschulden","verzwegen verhouding","gestolen ontdekking"]};
+const OPLOSSING={"dader":"Ida Rademaker","locatie":"platenarchief","voorwerp":"messing contragewicht","motief":"gestolen ontdekking"};
+const CONTROLECODE="4525";
+const FEITEN={"F1":"Roozeboom bediende om 23:00 de spectrograaf en de bezoekersgroep bleef tot kwart voor twaalf om hem heen staan. Roozeboom kan de dader niet zijn.","F2":"Het letsel toont een smalle, gladde slagrand met geribbeld profiel; geen glassplinters en geen houtvezels in de wond. Barometerbuis en kaartenlat vallen af.","F3":"Alleen het messing contragewicht ontbreekt uit de koepelzaal; statiefvoet en oliekan zijn aangetroffen en forensisch schoon.","F4":"De koepel draaide om 23:05 zonder waarneemdoel en de belichting brak af \u2014 de moord vond plaats tussen 23:05 en 23:40.","F5":"Fixeerzoutkristallen en booglampkool op de kleding komen uitsluitend in het platenarchief voor: d\u00e1\u00e1r vond de moord plaats.","F6":"Steenwijk vergist zich: drie bezoekers en de plaatsbepaling zetten hem van 23:00 tot 23:30 in de meridiaanzaal. Steenwijk valt af.","F7":"Het archiefslot (type K7, niet geforceerd) past alleen op sleutels aan de bossen van Rademaker, Steenwijk en Roozeboom.","F8":"Heerdink zou maandag de komeetvondst als de zijne aankondigen. Het motief: een gestolen ontdekking."};
+const SUD9_PUZ=[[0,6,0,0,0,0,9,2,0],[0,0,9,0,0,0,0,0,1],[7,0,0,3,0,0,0,0,0],[0,1,0,8,0,0,2,0,0],[2,0,0,0,0,0,0,0,0],[0,0,8,0,6,0,0,7,0],[1,0,0,9,0,0,5,0,0],[4,0,0,0,8,0,0,1,7],[0,0,7,6,1,0,0,3,0]];
+const SUD9_OPL=[[5,6,1,7,4,8,9,2,3],[3,8,9,5,2,6,7,4,1],[7,4,2,3,9,1,8,5,6],[6,1,4,8,3,7,2,9,5],[2,7,3,4,5,9,1,6,8],[9,5,8,1,6,2,3,7,4],[1,3,6,9,7,4,5,8,2],[4,9,5,2,8,3,6,1,7],[8,2,7,6,1,5,4,3,9]];
+const SUD9_RIJEN=["Heerdink","Feldkamp","Steenwijk","Brand","Rademaker","Roozeboom","Van Galen","Sanders","Douma"];
+const SUD9_KOL=["20:30","21:00","21:30","22:00","22:30","23:00","23:30","00:00","00:30"];
+const SUD9_TAKEN=["koepelbediening","spectrograaf","platen wisselen","rekentafel","bezoekers leiden","koffiekamer","tijdsein","donkere kamer","dakronde"];
+const KILLER_OPL=[[1,2,6,3,4,5],[5,4,3,1,2,6],[4,1,5,2,6,3],[3,6,2,4,5,1],[2,5,1,6,3,4],[6,3,4,5,1,2]];
+const KILLER_KOOIEN=[[[2,3],[1,3]],[[2,2],[1,2]],[[4,0],[4,1]],[[0,2],[0,3]],[[0,0],[0,1]],[[0,4],[1,4]],[[0,5],[1,5]],[[4,2],[4,3],[3,2]],[[1,0],[2,0]],[[1,1],[2,1],[3,1],[3,0]],[[2,4],[3,4],[3,3]],[[2,5],[3,5]],[[5,2],[5,3],[5,1]],[[5,0]],[[4,5],[5,5]],[[4,4],[5,4]]];
+const KILLER_SOM=[3,8,7,9,3,6,11,9,9,14,15,4,12,6,6,4];
+const STER=[2,4];
+const MUR_OPL=[[3,6,5,2,1,4],[4,1,2,5,3,6],[5,4,6,1,2,3],[1,2,3,4,6,5],[2,3,4,6,5,1],[6,5,1,3,4,2]];
+const MUR_PUZ=[[3,0,0,0,1,0],[0,0,0,5,0,6],[5,4,0,0,0,0],[0,2,0,0,0,0],[2,0,0,0,0,1],[0,0,0,0,4,2]];
+const MUR_DIAG=[3,1,6,4,5,2];
+const NONO=[[0,0,0,0,1,1,0,0,0,0],[0,0,0,0,1,1,0,0,0,0],[0,0,0,0,1,1,0,0,0,0],[0,0,1,1,1,1,1,1,0,0],[0,1,1,1,1,1,1,1,1,0],[0,1,1,0,1,1,0,1,1,0],[0,1,1,1,1,1,1,1,1,0],[0,1,1,0,1,1,0,1,1,0],[0,1,1,1,1,1,1,1,1,0],[0,0,1,1,1,1,1,1,0,0]];
+const RC=[[2],[2],[2],[6],[8],[2,2,2],[8],[2,2,2],[8],[6]];
+const CC=[[0],[5],[7],[2,1,2],[10],[10],[2,1,2],[7],[5],[0]];
+const KG=[[212,148,171,96],[87,134,59,203],[145,66,188,146]];
+const KG_RTOT=[627,483,545];
+const KG_CTOT=[444,348,418,445];
+const KG_MIS=[[0,1],[1,3],[2,3]];
+const SHIFT=7;
+const GEHEIM="TLTVYHUKBT NLYLJOALSPQR SHIVYHAVYPBT. CLGLSZ LU RYPZAHSSLU CLYNLSLRLU TLA TVUZALYZ BPA HSSL CPQM YBPTALU. BPAZSHN NLYLLK. TLSKDVVYK CVVY KL IPQSHNL: MPELLY.";
+const MELDWOORD="FIXEER";
+const KLUIS="6467";
+const WZ_GRID=["UUPOBTURRMHSR","LSDTEEOEENKRL","LIPADOZDTRLGL","AUALDVNUEASIM","ORSNZFNOMAEKO","CKSEBELHOTOTL","UDETZIMTNNHHI","LARRUTUAOAFRE","AAWANATARLOTK","IRGAATWLHPTBA","RDGKMSWPCGSWN","SIUBRETEMORAB","RKAVOHPVTWUNN"];
+const WZ_POS={"BAROMETERBUIS":[[11,12],[11,11],[11,10],[11,9],[11,8],[11,7],[11,6],[11,5],[11,4],[11,3],[11,2],[11,1],[11,0]],"STATIEFVOET":[[10,5],[9,5],[8,5],[7,5],[6,5],[5,5],[4,5],[3,5],[2,5],[1,5],[0,5]],"CHRONOMETER":[[10,8],[9,8],[8,8],[7,8],[6,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]],"PLAATHOUDER":[[10,7],[9,7],[8,7],[7,7],[6,7],[5,7],[4,7],[3,7],[2,7],[1,7],[0,7]],"KAARTENLAT":[[10,3],[9,3],[8,3],[7,3],[6,3],[5,3],[4,3],[3,3],[2,3],[1,3]],"DRAADKRUIS":[[10,1],[9,1],[8,1],[7,1],[6,1],[5,1],[4,1],[3,1],[2,1],[1,1]],"STOFHOES":[[10,10],[9,10],[8,10],[7,10],[6,10],[5,10],[4,10],[3,10]],"LANTAARN":[[8,9],[7,9],[6,9],[5,9],[4,9],[3,9],[2,9],[1,9]],"OLIEKAN":[[4,12],[5,12],[6,12],[7,12],[8,12],[9,12],[10,12]],"OCULAIR":[[4,0],[5,0],[6,0],[7,0],[8,0],[9,0],[10,0]],"PASSER":[[2,2],[3,2],[4,2],[5,2],[6,2],[7,2]]};
+const WZ_WOORDEN=["STATIEFVOET","BAROMETERBUIS","KAARTENLAT","OLIEKAN","OCULAIR","PASSER","CHRONOMETER","PLAATHOUDER","DRAADKRUIS","STOFHOES","LANTAARN"];
+const ONTBREEKT="CONTRAGEWICHT";
+const KW=[["Toegang tot het dakplatform (7)","DAKLUIK",1],["Het doel van de nachtelijke drukte (6)","KOMEET",2],["Stoorde de fotografen die heldere nacht (9)","MAANLICHT",4],["Rademakers vaste werkplek (10)","REKENTAFEL",3],["De zaal met de doorkijkspleet draagt zijn naam (9)","MERIDIAAN",2],["Roozebooms instrument die avond (12)","SPECTROGRAAF",6],["Waar de nachtploeg op adem komt (11)","KOFFIEKAMER",1],["Drager van elke opname (9)","GLASPLAAT",7],["Gaf het tijdsein, tot op de tel (11)","CHRONOMETER",7],["Zij vertrokken om kwart voor twaalf (9)","BEZOEKERS",2],["Sanders' functie bij de poort (7)","PORTIER",7]];
+const KW_CODE="DONKERKAMER";
+const LG_PERS=["Feldkamp","Steenwijk","Brand","Rademaker","Roozeboom"];
+const LG_POSN=["meridiaanzaal","bezoekersgroep","hoofdtrap","koffiekamer","niet gezien"];
+const LG_DOEL={"Feldkamp":"niet gezien","Steenwijk":"meridiaanzaal","Brand":"hoofdtrap","Rademaker":"koffiekamer","Roozeboom":"bezoekersgroep"};
+const K7=[2,3,1,2];
+const BOSSEN=[["Feldkamp",[[1,3,2,2],[3,1,1,2]]],["Steenwijk",[[2,3,1,2],[1,2,3,1],[2,2,1,3]]],["Brand",[[3,2,2,1],[1,1,2,3]]],["Rademaker",[[2,3,1,2],[3,3,2,1]]],["Roozeboom",[[2,3,1,2],[1,3,3,2]]]];
+const BOS_GOED=["Steenwijk","Rademaker","Roozeboom"];
+const CHRONO=["Strook A \u2014 de wind valt weg; het tijdsein van tien uur wordt op de rand bijgeschreven.","Strook B \u2014 direct na het bijgeschreven tijdsein: de pen slaat uit als de bezoekers de trap op komen.","Strook C \u2014 de uitslag van de bezoekers is net voorbij; de koepel opent en de druklijn zakt.","Strook D \u2014 de druklijn ligt al laag; om vijf over elf een tweede, korte koepelbeweging zonder aantekening.","Strook E \u2014 na de korte beweging: de belichtingsmarkering stopt midden in een streep.","Strook F \u2014 de onderbroken streep wordt om tien voor twaalf hervat; de bezoekers tekenen uit."];
+const MUR_SYM=["\u2605","\u263D","\u2726","\u25CF","\u25B2","\u25A0"];
+const ANAG=[["GADMANA","MAANDAG"],["TEMOKE","KOMEET"],["NELPAT","PLATEN"],["GENTIMEN","METINGEN"],["GINGDANKONIA","AANKONDIGING"],["KENGONTKID","ONTDEKKING"]];
+/* ===== STATE ===== */
+let S=null;
+function nieuweStaat(){return{
+  fase:"omslag",geluid:false,opgelost:{},feiten:[],d9open:false,d17open:false,kluisOpen:false,
+  hints:{},strepen:{},pogingen:0,klaar:false,
+  sud9:SUD9_PUZ.map(r=>r.map(v=>v||"")),
+  killer:KILLER_OPL.map(r=>r.map(()=>"")),
+  mur:MUR_PUZ.map(r=>r.map(v=>v||0)),
+  nono:NONO.map(r=>r.map(()=>0)),
+  kw:KW.map(()=>""),wzGevonden:[],wzKies:null,lg:{},kg:{},
+  chrono:[3,0,5,1,4,2],versch:[],vscMis:0,anag:ANAG.map(()=>"")
+};}
+function bewaar(){try{localStorage.setItem(SLEUTEL,JSON.stringify(S));}catch(e){}}
+function laadStaat(){
+  try{const r=localStorage.getItem(SLEUTEL);if(r){S=Object.assign(nieuweStaat(),JSON.parse(r));return;}}catch(e){}
+  S=nieuweStaat();
+}
+const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+/* ===== AUDIO ===== */
+let AC=null,amb=null;
+function audio(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+  if(AC&&AC.state==="suspended")AC.resume();return AC;}
+function toon(freq,dur,type,vol){const ac=audio();if(!ac||!S.geluid)return;
+  const o=ac.createOscillator(),g=ac.createGain();o.type=type||"sine";o.frequency.value=freq;
+  g.gain.setValueAtTime(vol||.05,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+(dur||.15));
+  o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+(dur||.15)+.02);}
+function sfxPapier(){toon(140,.06,"triangle",.03);setTimeout(()=>toon(210,.05,"triangle",.02),40);}
+function sfxGoed(){toon(523,.12,"sine",.06);setTimeout(()=>toon(659,.16,"sine",.06),110);}
+function sfxFout(){toon(196,.2,"sawtooth",.04);}
+function sfxTik(){toon(1100,.02,"square",.015);}
+function stempelKlap(tekst){
+  $("stempelTekst").textContent=tekst;const fx=$("stempelFx");fx.classList.remove("zien");void fx.offsetWidth;fx.classList.add("zien");
+  clearTimeout(fx._tm);fx._tm=setTimeout(()=>fx.classList.remove("zien"),1400);
+  const ac=audio();if(ac&&S.geluid){toon(90,.12,"square",.09);setTimeout(()=>toon(60,.2,"sine",.08),40);}
+}
+function startAmbience(){const ac=audio();if(!ac||amb)return;
+  const buf=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate),d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+  const src=ac.createBufferSource();src.buffer=buf;src.loop=true;
+  const f=ac.createBiquadFilter();f.type="lowpass";f.frequency.value=260;
+  const g=ac.createGain();g.gain.value=.035;
+  const lfo=ac.createOscillator(),lg=ac.createGain();lfo.frequency.value=.07;lg.gain.value=110;
+  lfo.connect(lg).connect(f.frequency);lfo.start();
+  src.connect(f).connect(g).connect(ac.destination);src.start();
+  const tik=setInterval(()=>{if(S&&S.geluid)toon(1500,.015,"square",.012);},1000);
+  amb={src,g,lfo,tik};
+}
+function stopAmbience(){if(!amb)return;try{amb.src.stop();amb.lfo.stop();clearInterval(amb.tik);}catch(e){}amb=null;}
+function zetGeluid(aan){S.geluid=aan;bewaar();$("knopGeluid").textContent="Geluid: "+(aan?"aan":"uit");
+  if(aan){audio();startAmbience();}else stopAmbience();}
+/* ===== SCHERMEN / OVERLAYS / TERUGKNOP ===== */
+let lagen=[],docPad=[],huidigDoc=null,sentinel=false;
+function zorgSentinel(){if(sentinel)return;try{history.pushState({p2:1},"");sentinel=true;}catch(e){}}
+function toonScherm(id){document.querySelectorAll(".scherm").forEach(s=>s.classList.remove("actief"));$(id).classList.add("actief");}
+function openOverlay(id){$(id).classList.add("actief");sfxPapier();
+  const i=lagen.indexOf(id);if(i>=0)lagen.splice(i,1);lagen.push(id);zorgSentinel();}
+function sluitOverlay(id){$(id).classList.remove("actief");
+  const i=lagen.indexOf(id);if(i>=0)lagen.splice(i,1);if(id==="docOverlay")docPad=[];}
+function stapTerug(){
+  if(lagen.length){const top=lagen[lagen.length-1];
+    if(top==="docOverlay"&&docPad.length>1){docPad.pop();openDoc(docPad[docPad.length-1],true);}
+    else sluitOverlay(top);
+    return true;}
+  if($("bureau").classList.contains("actief")){S.fase="omslag";bewaar();toonScherm("omslag");return true;}
+  return false;}
+function toast(txt){const t=$("toast");t.textContent=txt;t.classList.add("zien");
+  clearTimeout(t._tm);t._tm=setTimeout(()=>t.classList.remove("zien"),2600);}
+/* ===== FEITEN & MATRIX ===== */
+function noteerFeit(id){if(S.feiten.includes(id))return;
+  S.feiten.push(id);bewaar();stempelKlap("GENOTEERD \u2022 "+id);
+  toast("Feit "+id+" genoteerd in de bewijsmatrix.");tekenStrip();tekenTafel();}
+function tekenStrip(){const st=$("strip");
+  st.querySelectorAll(".chip").forEach(c=>c.remove());
+  for(let i=1;i<=8;i++){const f="F"+i,b=document.createElement("button");
+    b.className="chip"+(S.feiten.includes(f)?" aan":"");b.textContent=f;
+    b.addEventListener("click",openMatrix);st.appendChild(b);}}
+function openMatrix(){
+  const vel=$("matrixVel");
+  let h='<div class="velkop"><span class="dnr">MATRIX</span><h2>De bewijsmatrix</h2>'+
+   '<button class="sluit" data-sluit="matrixOverlay" aria-label="sluiten">\u2715</button></div><div class="doctekst">'+
+   '<p style="font-size:.85rem">Elk genoteerd feit snijdt mogelijkheden weg. Streep in de panelen door wat afvalt;'+
+   ' wat overblijft, vult u in op het conclusieformulier.</p><h4>Genoteerde feiten</h4><div id="feitenLijst"></div>'+
+   '<h4>Eliminatiepanelen</h4><div id="asPanelen"></div>'+
+   '<div class="hintbalk"><button id="mhKnop">Hulp bij het elimineren</button><div id="mhUit"></div></div></div>';
+  vel.innerHTML=h;
+  const fl=vel.querySelector("#feitenLijst");
+  fl.innerHTML=S.feiten.length?[...S.feiten].sort().map(f=>'<div class="feitkaart"><span class="fid">'+f+'</span>'+esc(FEITEN[f])+'</div>').join(""):
+    '<p><em>Nog geen feiten genoteerd. Los bijlagen op en druk op &ldquo;Noteer feit&rdquo;.</em></p>';
+  const namen={dader:"Dader",locatie:"Locatie",voorwerp:"Voorwerp",motief:"Motief"};
+  vel.querySelector("#asPanelen").innerHTML=Object.keys(ASSEN).map(as=>
+   '<b style="font-size:.8rem;letter-spacing:.08em">'+namen[as].toUpperCase()+'</b><div class="aslijst">'+
+   ASSEN[as].map((o,i)=>{const k=as+":"+i;return '<button data-streep="'+k+'" class="'+(S.strepen[k]?"streep":"")+'">'+esc(o)+'</button>';}).join("")+'</div>').join("");
+  vel.querySelectorAll("[data-streep]").forEach(b=>b.addEventListener("click",()=>{
+    const k=b.dataset.streep;S.strepen[k]=!S.strepen[k];bewaar();b.classList.toggle("streep");sfxTik();}));
+  vel.querySelector("#mhKnop").addEventListener("click",()=>{
+    const n=S.feiten.length,u=vel.querySelector("#mhUit");
+    let t;
+    if(!n)t="Begin bij het nachtrooster (bijlage 3) en het verhoorformulier (bijlage 4): die geven de eerste ingangen.";
+    else if(n<4)t="Werk per as. Feiten die zeggen dat iets &ldquo;afvalt&rdquo; streept u door; feiten die iets aanwijzen laten precies \u00e9\u00e9n mogelijkheid over.";
+    else if(n<8)t="Let op de sleutels: het slot beperkt de dadergroep tot drie namen. Combineer dat met de twee alibi's \u2014 er blijft er dan \u00e9\u00e9n over.";
+    else t="Alles is binnen: \u00e9\u00e9n naam zonder alibi binnen de sleutelgroep, \u00e9\u00e9n ruimte uit het vezelrapport, \u00e9\u00e9n ontbrekend voorwerp, \u00e9\u00e9n motief van de draadopname.";
+    u.innerHTML='<div class="hinttekst">'+t+'</div>';});
+  vel.querySelectorAll("[data-sluit]").forEach(b=>b.addEventListener("click",()=>sluitOverlay(b.dataset.sluit)));
+  openOverlay("matrixOverlay");vel.scrollTop=0;
+}
+/* ===== HINTS ===== */
+const HINTS={
+ P1:["De inktvlek dekt \u00e9\u00e9n kolom, maar elke rij en elk blok van drie-bij-drie bevat elk taaknummer precies \u00e9\u00e9n keer.",
+     "Vul eerst de rijen met de meeste gegeven nummers. Wat in rij en blok al voorkomt, kan in de vlekkolom niet meer \u2014 zo dwingt u die kolom af.",
+     "In de kolom van 23:00 hoort bij Roozeboom taaknummer 2, de spectrograaf. De bezoekers stonden om die bediener heen: dat is het feit."],
+ P2:["Elke omschrijving verwijst naar iets uit de stukken; het aantal letters staat erbij.",
+     "Vul de zekere antwoorden eerst in en lees dan de goudkleurige vakjes van boven naar beneden.",
+     "De gemarkeerde letters spellen DONKERKAMER \u2014 het woord waarmee het verzegelde stuk opengaat."],
+ P3:["Woorden staan in alle acht richtingen. Tik de eerste en daarna de laatste letter van een woord.",
+     "Zoek eerst de lange woorden: die passen maar op weinig plaatsen.",
+     "Elf woorden staan in het raster. Leg de inventarislijst ernaast: het voorwerp dat n\u00edet in het raster staat, is wat er die nacht verdween."],
+ P4:["De stroken zijn pas te lezen als ze in de juiste volgorde liggen.",
+     "Zoek het moment waarop de koepel z\u00f3nder aantekening bewoog en het moment waarop de belichting weer werd hervat.",
+     "De koepel draaide om 23:05 zonder doel; om 23:40 werd de streep hervat. Het venster is dus 23:05 tot 23:40."],
+ P5:["Vergelijk de stoffen op de kleding met de kolommen per ruimte.",
+     "Twee stoffen samen komen maar in \u00e9\u00e9n kolom allebei voor.",
+     "Fixeerzout \u00e9n booglampkool staan alleen samen bij het platenarchief: daar vond de moord plaats."],
+ P6:["Begin met de aanwijzing over wie de uitleg g\u00e1f: dat kan maar bij twee mensen liggen.",
+     "De portier zag Rademaker de koffiekamer binnengaan en passeerde Brand op de trap \u2014 daarmee valt bijna alles vast.",
+     "Steenwijk gaf de uitleg in de meridiaanzaal, Roozeboom stond bij de groep, Brand op de trap, Rademaker in de koffiekamer \u2014 en Feldkamp werd door niemand gezien. Steenwijks eigen verhaal klopt dus niet, maar drie bezoekers geven hem w\u00e9l een alibi."],
+ P7:["Leg het slotprofiel K7 naast elke baard: vier inkepingen, van links naar rechts.",
+     "Alleen een baard die op alle vier de posities gelijk is, past. Kijk per bos of er z\u00f3'n sleutel tussen hangt.",
+     "De bossen van Rademaker, Steenwijk en Roozeboom dragen elk een sleutel met profiel 2-3-1-2. De andere twee niet."],
+ P8:["Elk verhaspeld woord gebruikt precies de letters die er staan.",
+     "Het zijn woorden uit deze zaak: denk aan de dag, het object aan de hemel en wat er in het archief ligt.",
+     "Hersteld zegt de band: maandag kondigt Heerdink de ontdekking als de zijne aan \u2014 het motief is een gestolen ontdekking."],
+ P9:["Binnen elke gestippelde groep verschillen de cijfers en telt de som op tot het kleine getal.",
+     "Begin bij groepen van twee vakjes met een lage of juist hoge som: die laten weinig combinaties toe.",
+     "Als het rooster klopt, staat in het omcirkelde vakje het cijfer voor schijf I van de kluis."],
+ P10:["Elke rij, kolom en elk blok van twee-bij-drie bevat elk merkteken precies \u00e9\u00e9n keer.",
+     "Werk vanuit de rijen met drie gegeven tekens; er blijft telkens maar \u00e9\u00e9n plek over.",
+     "De tekens op de doorlopende diagonaal geven, van linksboven naar rechtsonder, de volgorde van de haken \u2014 daarmee is de sleutelkast weer te lezen."],
+ P11:["Getallen geven aaneengesloten blokjes zwart in die rij of kolom, in volgorde, met minstens \u00e9\u00e9n wit vakje ertussen.",
+     "Begin bij rijen waarvan de som plus tussenruimtes precies tien is: die liggen helemaal vast.",
+     "Het herstelde beeld toont de schijf van het contragewicht. Tel de boorgaten in de schijf: dat aantal is schijf II."],
+ P12:["Elke rij en elke kolom telt op tot het totaal in de marge.",
+     "Twee ontbrekende bedragen staan in dezelfde kolom \u2014 los eerst het bedrag op dat alleen in zijn rij ontbreekt.",
+     "Het slotbedraag rechtsonder is f 146. Het laatste cijfer daarvan is schijf III."],
+ P13:["Elke letter is over hetzelfde aantal plaatsen in het alfabet verschoven.",
+     "Probeer een kort woord: MEMORANDUM ligt voor de hand als beginwoord.",
+     "De verschuiving is zeven \u2014 dat is schijf IV. Ontcijferd eindigt het briefje met een meldwoord voor het laboratorium."],
+ P14:["Elke strook verwijst naar iets dat er direct aan voorafging.",
+     "Zet de strook met het tijdsein van tien uur voorop en volg de verwijzingen.",
+     "De volgorde is A, B, C, D, E, F: wind valt weg, bezoekers komen, koepel opent, tweede beweging, belichting breekt, streep hervat."],
+ P15:["Tik in de rechteropname aan wat anders is dan links. Er zijn er tien.",
+     "Kijk naar de telescoop zelf, de tafel, het luik, de klok en wat er aan de wand hangt.",
+     "Het grootste verschil: aan de as van de kijker ontbreekt rechts het contragewicht. Verder: stoel, luik, oliekan, lat, klok, jas, lade, glasplaat en lamp."],
+ P5x:["Lees de beschrijving van de slagrand en van wat er n\u00edet in de wond zat.",
+     "Geen glassplinters en geen houtvezels: welke twee voorwerpen bestaan uit precies die materialen?",
+     "De glazen barometerbuis en de eiken kaartenlat vallen af \u2014 kruis die twee aan."],
+ P16:["De vier schijven komen uit vier verschillende stukken op de lichttafel.",
+     "Schijf I uit de urenstaat, II uit de herstelde glasplaat, III uit de afrekening, IV uit het cijferschrift.",
+     "De combinatie is het cijfer in het omcirkelde vakje, het aantal boorgaten, het laatste cijfer van f 146 en de verschuiving van het cijferschrift."]
+};
+function hintBalkHTML(p){return '<div class="hintbalk"><button data-hint="'+p+'">Hint ('+((S.hints[p]||0))+'/3)</button><div id="hintUit-'+p+'"></div></div>';}
+function koppelHints(vel){vel.querySelectorAll("[data-hint]").forEach(b=>b.addEventListener("click",()=>{
+  const p=b.dataset.hint;S.hints[p]=Math.min(3,(S.hints[p]||0)+1);bewaar();
+  b.textContent="Hint ("+S.hints[p]+"/3)";
+  $("hintUit-"+p).innerHTML=HINTS[p].slice(0,S.hints[p]).map(h=>'<div class="hinttekst">'+h+'</div>').join("");
+  sfxPapier();}));}
+/* ===== ILLUSTRATIES ===== */
+function briefhoofd(pv,datum){
+  return '<div class="briefhoofd"><span><b>RIJKSRECHERCHE</b> \u00b7 KOUDE ZAKEN</span>'+
+  '<span>P.V. '+pv+'</span><span>'+datum+'</span></div>';}
+function plattegrondSVG(){
+  const k='fill="none" stroke="#5c523d" stroke-width="2"',t='font-family="Courier New,monospace" fill="#5c523d" font-size="11"',t9='font-family="Courier New,monospace" fill="#5c523d" font-size="9"';
+  return '<svg viewBox="0 0 360 250" role="img" aria-label="Plattegrond van de sterrenwacht">'+
+  '<rect x="8" y="8" width="344" height="234" fill="#f3ebd6" stroke="#c3b795"/>'+
+  '<circle cx="90" cy="70" r="52" '+k+'/><text x="90" y="66" text-anchor="middle" '+t+'>koepelzaal</text>'+
+  '<text x="90" y="80" text-anchor="middle" '+t9+'>(kijker)</text>'+
+  '<rect x="160" y="30" width="90" height="52" '+k+'/><text x="205" y="60" text-anchor="middle" '+t+'>meridiaanzaal</text>'+
+  '<rect x="262" y="30" width="80" height="52" '+k+'/><text x="302" y="52" text-anchor="middle" '+t+'>dakplatform</text>'+
+  '<text x="302" y="66" text-anchor="middle" '+t9+'>(via dakluik)</text>'+
+  '<rect x="160" y="100" width="90" height="50" '+k+'/><text x="205" y="128" text-anchor="middle" '+t+'>rekenkamer</text>'+
+  '<rect x="262" y="100" width="80" height="50" '+k+'/><text x="302" y="128" text-anchor="middle" '+t+'>koffiekamer</text>'+
+  '<rect x="40" y="150" width="100" height="60" '+k+'/><text x="90" y="176" text-anchor="middle" '+t+'>platenarchief</text>'+
+  '<text x="90" y="190" text-anchor="middle" '+t9+'>+ donkere kamer</text>'+
+  '<rect x="160" y="168" width="110" height="52" '+k+'/><text x="215" y="198" text-anchor="middle" '+t+'>werkplaats</text>'+
+  '<rect x="286" y="168" width="56" height="52" '+k+'/><text x="314" y="192" text-anchor="middle" '+t9+'>hoofdtrap</text>'+
+  '<path d="M140 70 h18 M205 82 v16 M250 125 h10 M90 122 v26 M140 195 h18 M270 195 h14 M302 82 v16" stroke="#a4322a" stroke-width="2" stroke-dasharray="3 3" fill="none"/>'+
+  '<text x="16" y="236" '+t9+'>Rijkssterrenwacht \u201cHelderoord\u201d \u2014 begane grond en koepelverdieping (schets)</text></svg>';}
+function sleutelSVG(toonNamen){
+  // sleutelkast: 6 haken (I..VI); 5 bossen + 1 leeg haakje; profielen 4 inkepingen (diepte 1-3)
+  const volg=MUR_DIAG; // haakvolgorde via diagonaal
+  let s='<svg viewBox="0 0 380 330" role="img" aria-label="De sleutelkast met sleutelbossen">'+
+   '<rect x="4" y="4" width="372" height="322" fill="#3a2f22" rx="6"/>'+
+   '<rect x="14" y="14" width="352" height="302" fill="#eee4cb" rx="3"/>'+
+   '<text x="190" y="34" text-anchor="middle" font-family="Courier New,monospace" font-size="12" fill="#5c523d">SLEUTELKAST \u2014 PORTIERSLOGE</text>';
+  // slotprofiel K7 referentie
+  s+='<g transform="translate(24,44)"><text x="0" y="10" font-family="Courier New,monospace" font-size="10" fill="#a4322a">slotprofiel K7 (archief):</text>';
+  s+='<g transform="translate(150,-6)">'+baard(K7,"#a4322a")+'</g></g>';
+  const bosjes=[["Feldkamp",0],["Steenwijk",1],["Brand",2],["Rademaker",3],["Roozeboom",4],[null,5]];
+  bosjes.forEach((bp,i)=>{
+    const x=34+(i%3)*118,y=88+Math.floor(i/3)*118;
+    s+='<g transform="translate('+x+','+y+')">';
+    s+='<circle cx="46" cy="0" r="4" fill="#7a6a4c"/>';
+    const merk=MUR_SYM[volg[i]-1];
+    s+='<text x="46" y="-8" text-anchor="middle" font-size="13" fill="#5c523d">'+merk+'</text>';
+    if(bp[0]===null){s+='<text x="46" y="46" text-anchor="middle" font-family="Courier New,monospace" font-size="9" fill="#8a7c5c">(leeg haakje \u2014 directie)</text>';}
+    else{
+      const bos=BOSSEN.find(b=>b[0]===bp[0]);
+      bos[1].forEach((pr,j)=>{s+='<g transform="translate('+(10+j*26)+',8) rotate('+(j*8-8)+' 8 0)">'+baard(pr,"#4a3e2a")+'</g>';});
+      s+='<text x="46" y="96" text-anchor="middle" font-family="Courier New,monospace" font-size="10" fill="#3a2f22">'+
+        (toonNamen?esc(bp[0]):"label onleesbaar")+'</text>';
+    }
+    s+='</g>';});
+  s+='</svg>';return s;
+  function baard(pr,kleur){
+    let p='M0 0 v54 ';let d=0;
+    pr.forEach(v=>{p+='h'+(4+v*3)+' v6 h-'+(4+v*3)+' ';d+=0;});
+    let z='<path d="M4 4 h8 v50 ';
+    pr.forEach(v=>{z+='h'+(3+v*3)+' v7 h-'+(3+v*3)+' ';});
+    z+='v6 h-8 z" fill="none" stroke="'+kleur+'" stroke-width="2"/>';
+    z+='<circle cx="8" cy="2" r="5" fill="none" stroke="'+kleur+'" stroke-width="2"/>';
+    return z;}
+}
+function koepelSVG(rechts){
+  // twee opnamen van de koepelzaal; rechts=true bevat de 10 verschillen
+  const w='#c7d9ec',m='#b98f4a';
+  let s='<svg viewBox="0 0 380 240" data-kant="'+(rechts?"R":"L")+'">'+
+  '<rect width="380" height="240" fill="#101a2a"/>'+
+  '<path d="M0 60 A190 190 0 0 1 380 60 L380 0 L0 0 Z" fill="#0a1220"/>'+
+  '<rect x="150" y="0" width="46" height="70" fill="#1b2b44"/>';
+  // telescoop
+  s+='<g stroke="'+m+'" stroke-width="5" fill="none"><path d="M120 200 L215 92"/><path d="M205 104 l26 22" stroke-width="8"/></g>';
+  s+='<circle cx="120" cy="200" r="14" fill="#233450"/>';
+  // contragewicht: alleen links aanwezig (verschil 1)
+  if(!rechts)s+='<circle cx="98" cy="176" r="12" fill="'+m+'" data-noop="1"/>';
+  // stoel: links bij tafel, rechts verschoven (2)
+  s+='<g fill="#3a2f22"><rect x="'+(rechts?300:262)+'" y="188" width="26" height="8"/><rect x="'+(rechts?306:268)+'" y="196" width="4" height="22"/><rect x="'+(rechts?316:278)+'" y="196" width="4" height="22"/></g>';
+  // luik in vloer: links dicht, rechts open (3)
+  s+=rechts?'<rect x="40" y="216" width="40" height="14" fill="#050a12" stroke="'+m+'" stroke-width="1.5"/>':
+            '<rect x="40" y="216" width="40" height="14" fill="#1b2b44" stroke="'+m+'" stroke-width="1.5"/>';
+  // tafel
+  s+='<rect x="240" y="160" width="110" height="8" fill="#4a3e2a"/><rect x="246" y="168" width="6" height="50" fill="#4a3e2a"/><rect x="338" y="168" width="6" height="50" fill="#4a3e2a"/>';
+  // oliekan: links op tafel, rechts op vloer (4)
+  s+='<g transform="translate('+(rechts?196:290)+','+(rechts?210:142)+')"><path d="M0 8 h14 v10 h-14 z M14 10 l8 -6 M4 8 v-5 h6 v5" stroke="'+m+'" fill="none" stroke-width="2"/></g>';
+  // kaartenlat aan wand: links horizontaal, rechts scheef (5)
+  s+='<rect x="20" y="90" width="70" height="5" fill="#8a7c5c" transform="rotate('+(rechts?14:0)+' 55 92)"/>';
+  // klok: wijzers anders (6)
+  s+='<circle cx="330" cy="60" r="16" fill="#0d1626" stroke="'+w+'" stroke-width="1.5"/>';
+  s+=rechts?'<path d="M330 60 L330 48 M330 60 L340 66" stroke="'+w+'" stroke-width="2"/>':
+            '<path d="M330 60 L322 52 M330 60 L330 72" stroke="'+w+'" stroke-width="2"/>';
+  // jas aan haak: alleen links (7)
+  if(!rechts)s+='<path d="M56 120 l-8 34 h22 l-8 -34 z M52 118 h12" fill="#233450" stroke="#233450"/>';
+  s+='<circle cx="62" cy="116" r="2.5" fill="'+m+'"/>';
+  // lade van de tafel: rechts open (8)
+  s+=rechts?'<rect x="286" y="170" width="30" height="12" fill="#4a3e2a" stroke="'+m+'" stroke-width="1"/><rect x="292" y="174" width="18" height="3" fill="'+m+'"/>':
+            '<rect x="296" y="170" width="20" height="10" fill="#3a2f22"/>';
+  // glasplaat op tafel: alleen rechts (9)
+  if(rechts)s+='<rect x="252" y="150" width="26" height="9" fill="#9db8cf" opacity=".8" transform="rotate(-6 265 154)"/>';
+  // wandlamp: links aan (gloed), rechts uit (10)
+  s+='<rect x="12" y="52" width="8" height="14" fill="'+m+'"/>';
+  if(!rechts)s+='<circle cx="16" cy="59" r="12" fill="#ffe9bd" opacity=".35"/>';
+  s+='<text x="8" y="234" font-family="Courier New,monospace" font-size="9" fill="#5c748c">fotodienst \u2014 koepelzaal, '+(rechts?"23:50":"22:40")+' uur</text>';
+  return s; // zonder </svg>: aanroeper voegt verschilzones toe
+}
+const VSC_ZONES=[[98,176,20,"het contragewicht aan de as"],[313,200,24,"de stoel"],[60,223,26,"het vloerluik"],
+ [203,215,20,"de oliekan"],[55,92,30,"de kaartenlat"],[330,60,20,"de klok"],[62,134,24,"de jas aan de haak"],
+ [301,176,22,"de lade"],[265,154,20,"een losse glasplaat"],[16,59,16,"de wandlamp"]];
+function tekenSterren(){
+  const h=$("hemel");let html="";
+  for(let i=0;i<70;i++){const x=Math.random()*100,y=Math.random()*100,d=(2.5+Math.random()*5).toFixed(1);
+    html+='<span class="ster" style="left:'+x.toFixed(1)+'%;top:'+y.toFixed(1)+'%;--d:'+d+'s;opacity:'+(0.3+Math.random()*.6).toFixed(2)+'"></span>';}
+  html+='<span class="komeet"></span>';h.innerHTML=html;}
+/* ===== LICHTTAFEL (scene) ===== */
+const TAFEL=[
+ {id:"D1", x:60,  y:120, rot:-3, vorm:"rapport", label:"politierapport"},
+ {id:"D2", x:270, y:110, rot:2,  vorm:"rapport", label:"verklaringen"},
+ {id:"D3", x:520, y:120, rot:-2, vorm:"fiche",   label:"nachtrooster"},
+ {id:"D4", x:60,  y:300, rot:2,  vorm:"fiche",   label:"verhoorformulier"},
+ {id:"D9", x:270, y:295, rot:-2, vorm:"envelop", label:"verzegeld"},
+ {id:"D18",x:520, y:300, rot:3,  vorm:"fiche",   label:"plaatsbepaling"},
+ {id:"D6", x:60,  y:480, rot:-2, vorm:"strook",  label:"registratiestroken"},
+ {id:"D11",x:270, y:475, rot:2,  vorm:"negatief",label:"twee opnamen"},
+ {id:"D5", x:520, y:480, rot:-3, vorm:"fiche",   label:"zoekraster"},
+ {id:"D16",x:60,  y:660, rot:2,  vorm:"fiche",   label:"ophangschema"},
+ {id:"D7", x:270, y:655, rot:-2, vorm:"kast",    label:"sleutelkast"},
+ {id:"D17",x:520, y:660, rot:2,  vorm:"rapport", label:"vezelrapport"},
+ {id:"D12",x:60,  y:840, rot:-2, vorm:"fiche",   label:"urenstaat"},
+ {id:"D10",x:270, y:835, rot:3,  vorm:"negatief",label:"beschadigde plaat"},
+ {id:"D13",x:520, y:840, rot:-2, vorm:"fiche",   label:"afrekening 1957"},
+ {id:"D15",x:60,  y:1020,rot:2,  vorm:"fiche",   label:"cijferschrift"},
+ {id:"D14",x:270, y:1015,rot:-1, vorm:"kluis",   label:"instrumentenkluis"},
+ {id:"D8", x:520, y:1020,rot:2,  vorm:"spoel",   label:"draadopname"}
+];
+const KRIJT=[["D12","D14"],["D10","D14"],["D13","D14"],["D15","D14"],["D15","D17"],["D16","D7"],["D11","D5"],["D4","D9"]];
+const FEIT_BRON={D3:"F1",D9:"F2",D5:"F3",D6:"F4",D17:"F5",D18:"F6",D7:"F7",D8:"F8"};
+function docDicht(id){
+  if(id==="D8")return !S.kluisOpen;
+  if(id==="D9")return !S.d9open;
+  if(id==="D17")return !S.d17open;
+  return false;}
+function ficheVorm(t){
+  const b='class="ficheV"';
+  if(t.vorm==="negatief")return '<rect '+b+' x="-72" y="-52" width="144" height="104" rx="3" fill="#131f33" stroke="#31435f" stroke-width="2"/>'+
+    '<rect x="-60" y="-40" width="120" height="80" fill="#0b1424"/><circle cx="-18" cy="-6" r="3" fill="#c7d9ec"/><circle cx="22" cy="14" r="2" fill="#c7d9ec"/>'+
+    '<circle cx="8" cy="-22" r="2.4" fill="#c7d9ec"/><path d="M-44 26 l30 -18" stroke="#c7d9ec" stroke-width="1" opacity=".7"/>';
+  if(t.vorm==="envelop")return '<rect '+b+' x="-72" y="-48" width="144" height="96" rx="2" fill="#d9c9a2" stroke="#8a7c5c" stroke-width="1.5"/>'+
+    '<path d="M-72 -48 L0 8 L72 -48" fill="none" stroke="#8a7c5c" stroke-width="1.5"/>'+
+    '<circle cx="0" cy="14" r="12" fill="#a4322a"/><text y="18" text-anchor="middle" font-size="9" fill="#f5e6d8" font-family="Courier New,monospace">LAB</text>';
+  if(t.vorm==="strook")return '<rect '+b+' x="-78" y="-40" width="156" height="80" fill="#efe6d0" stroke="#8a7c5c"/>'+
+    '<path d="M-70 10 q10 -22 20 0 t20 0 t20 0 t20 0 t20 0 t20 0" fill="none" stroke="#a4322a" stroke-width="1.4"/>'+
+    '<path d="M-70 -14 h140 M-70 -2 h140 M-70 22 h140" stroke="#c3b795" stroke-width=".8"/>';
+  if(t.vorm==="kast")return '<rect '+b+' x="-66" y="-52" width="132" height="104" rx="4" fill="#3a2f22" stroke="#8a7c5c" stroke-width="2"/>'+
+    '<rect x="-54" y="-40" width="108" height="80" fill="#eee4cb"/>'+
+    '<g stroke="#4a3e2a" stroke-width="2" fill="none"><path d="M-34 -22 v20 m0 0 h6 m-6 -6 h5"/><path d="M0 -22 v20 m0 0 h6 m-6 -6 h5"/><path d="M34 -22 v20 m0 0 h6 m-6 -6 h5"/></g>';
+  if(t.vorm==="kluis")return '<rect '+b+' x="-62" y="-52" width="124" height="104" rx="6" fill="#26303f" stroke="#b98f4a" stroke-width="2.5"/>'+
+    '<circle cx="0" cy="-4" r="22" fill="none" stroke="#b98f4a" stroke-width="3"/><circle cx="0" cy="-4" r="4" fill="#b98f4a"/>'+
+    '<rect x="-30" y="30" width="60" height="8" rx="3" fill="#b98f4a"/>';
+  if(t.vorm==="spoel")return '<circle '+b+' cx="0" cy="0" r="50" fill="#8a7c5c"/><circle cx="0" cy="0" r="44" fill="#26211a"/>'+
+    '<circle cx="0" cy="0" r="16" fill="#d9c9a2"/><circle cx="0" cy="0" r="4" fill="#26211a"/>'+
+    '<path d="M0 0 m-44 0 a44 44 0 0 1 88 0" fill="none" stroke="#3a3128" stroke-width="1"/>';
+  if(t.vorm==="rapport")return '<rect '+b+' x="-70" y="-54" width="140" height="108" fill="#efe6d0" stroke="#8a7c5c"/>'+
+    '<path d="M-56 -34 h112 M-56 -22 h112 M-56 -10 h96 M-56 2 h112 M-56 14 h84 M-56 26 h108" stroke="#b0a382" stroke-width="1.6"/>'+
+    '<rect x="-70" y="-54" width="140" height="14" fill="#d9c9a2"/>';
+  return '<rect '+b+' x="-64" y="-46" width="128" height="92" fill="#f3ebd6" stroke="#8a7c5c"/>'+
+    '<path d="M-50 -26 h100 M-50 -12 h100 M-50 2 h84 M-50 16 h100" stroke="#b0a382" stroke-width="1.4"/>';
+}
+function tekenTafel(){
+  let s='<svg viewBox="0 0 680 1215" role="img" aria-label="De lichttafel met alle stukken van de zaak">';
+  s+='<defs><radialGradient id="gloed" cx="50%" cy="42%" r="75%">'+
+     '<stop offset="0%" stop-color="#f2ead2"/><stop offset="62%" stop-color="#ddd0ab"/><stop offset="100%" stop-color="#b3a480"/></radialGradient>'+
+     '<radialGradient id="lampG" cx="50%" cy="0%" r="100%"><stop offset="0%" stop-color="rgba(61,107,87,.5)"/><stop offset="100%" stop-color="rgba(61,107,87,0)"/></radialGradient></defs>';
+  s+='<rect x="6" y="34" width="668" height="1172" rx="14" fill="#4a3a26"/>';
+  s+='<rect x="18" y="46" width="644" height="1148" rx="8" fill="url(#gloed)"/>';
+  s+='<rect x="18" y="46" width="644" height="1148" rx="8" fill="none" stroke="#b98f4a" stroke-width="3"/>';
+  s+='<g><rect x="250" y="0" width="180" height="10" rx="5" fill="#2c4a3c"/><path d="M280 10 q60 26 120 0" fill="none" stroke="#1e3329" stroke-width="4"/>'+
+     '<ellipse cx="340" cy="120" rx="300" ry="130" fill="url(#lampG)"/></g>';
+  // krijtlijnen
+  KRIJT.forEach(([a,b])=>{const A=TAFEL.find(t=>t.id===a),B=TAFEL.find(t=>t.id===b);
+    s+='<path d="M'+(A.x+70)+' '+(A.y+60)+' Q '+((A.x+B.x)/2+70)+' '+((A.y+B.y)/2+30)+' '+(B.x+70)+' '+(B.y+60)+'" fill="none" stroke="rgba(70,60,40,.4)" stroke-width="2" stroke-dasharray="7 6"/>';});
+  TAFEL.forEach(t=>{
+    const dicht=docDicht(t.id),fb=FEIT_BRON[t.id],genoteerd=fb&&S.feiten.includes(fb);
+    const opg=t.id==="D14"&&S.kluisOpen;
+    s+='<g class="fiche'+(dicht?" dicht":"")+'" data-doc="'+t.id+'" transform="translate('+(t.x+70)+','+(t.y+60)+') rotate('+t.rot+')">';
+    s+=ficheVorm(t);
+    s+='<text y="70" text-anchor="middle" font-family="Courier New,monospace" font-size="12.5" fill="#3a2f22">'+esc(t.label)+'</text>';
+    s+='<text y="-62" text-anchor="middle" font-family="Courier New,monospace" font-size="10" fill="#6b5c3d">'+t.id.replace("D","bijlage ")+'</text>';
+    if(dicht)s+='<g transform="translate(46,-46)"><rect x="-11" y="-7" width="22" height="16" rx="3" fill="#5c523d"/><path d="M-6 -7 v-5 a6 6 0 0 1 12 0 v5" fill="none" stroke="#5c523d" stroke-width="3"/></g>';
+    else if(genoteerd||opg)s+='<g transform="translate(46,-44) rotate(12)"><rect x="-34" y="-9" width="68" height="18" fill="none" stroke="#2f5c42" stroke-width="2"/><text y="4" text-anchor="middle" font-size="9.5" fill="#2f5c42" font-family="Courier New,monospace">'+(opg?"GEOPEND":"GENOTEERD")+'</text></g>';
+    s+='</g>';});
+  s+='<text x="340" y="1204" text-anchor="middle" font-family="Courier New,monospace" font-size="11" fill="#4a3a26">lichttafel \u00b7 platenarchief \u00b7 zaak 57-L1</text>';
+  s+='</svg>';
+  $("tafelWrap").innerHTML=s;
+  document.querySelectorAll("#tafelWrap .fiche").forEach(g=>g.addEventListener("click",()=>openDoc(g.dataset.doc)));
+}
+/* ===== DOCUMENTEN ===== */
+const DOCS=[
+ {id:"D1",titel:"Politierapport 57-L1",tag:"lezen",html:`
+  <p><span class="stempelRood">VERTROUWELIJK</span></p>
+  <p><b>Zaak:</b> overlijden prof. dr. Tobias Heerdink (61), directeur van de Rijkssterrenwacht &ldquo;Helderoord&rdquo;.</p>
+  <p><b>Aanleiding.</b> Openbare komeetavond; om 22:00 werd een bezoekersgroep van veertien personen binnengelaten.
+  Om <b>23:52</b> trof portier Sanders het slachtoffer aan, liggend tussen de kasten. De koepel stond
+  open; de grote kijker wees naar een leeg stuk hemel. Aan de as van de kijker <b>ontbreekt het contragewicht</b>.</p>
+  <h4>Betrokkenen (personeel binnen de muren)</h4>
+  <table class="docTabel"><tr><th>naam</th><th>hoedanigheid</th><th>bijzonderheid uit eerste verhoor</th></tr>
+  <tr><td>Nora Feldkamp</td><td>promovenda</td><td>haar aanstelling werd vorige maand door het slachtoffer <b>niet verlengd</b> (afgewezen benoeming)</td></tr>
+  <tr><td>Viktor Steenwijk</td><td>instrumentmaker</td><td>verklaart de hele avond alleen in de werkplaats te zijn geweest</td></tr>
+  <tr><td>Lodewijk Brand</td><td>administrateur</td><td>beheert de subsidiegelden; het kasboek vertoont een <b>onverklaard gat</b> (verduistering?)</td></tr>
+  <tr><td>Ida Rademaker</td><td>rekenares</td><td>mat die nacht de glasplaten door, zoals elke nacht</td></tr>
+  <tr><td>Meindert Roozeboom</td><td>weerkundige</td><td>staat bij het personeel bekend om zijn <b>speelschulden</b>; had die middag luid met het slachtoffer getwist</td></tr></table>
+  <h4>Terrein</h4>
+  <p class="mono">koepelverdieping: koepelzaal &middot; meridiaanzaal &middot; dakplatform (via dakluik) &mdash;
+  begane grond: rekenkamer &middot; koffiekamer &middot; werkplaats &middot; <b>platenarchief met donkere kamer</b> (eigen slot, type K7) &middot; hoofdtrap.</p>
+  <h4>Eerste bevindingen</h4>
+  <p class="citaat">Het lichaam is verplaatst: sleepsporen van fijn grijs stof lopen van de archiefdeur naar de kasten in de koepelzaal.
+  Het archiefslot is <b>niet geforceerd</b>. In de zak van het slachtoffer: een sleutel van de instrumentenkluis ontbreekt.</p>
+  <p><em>Zie voor de bewegingen van die nacht de registratiestroken van het weerhok (bijlage 6).</em></p>`},
+ {id:"D2",titel:"Verklaringen",tag:"lezen",html:`
+  <h4>Uittreksels eerste verhoor</h4>
+  <div class="citaat"><span class="wie">NORA FELDKAMP</span>&ldquo;Ik heb de bezoekers om tien uur ontvangen en ben daarna
+  aan mijn eigen werk gegaan. Waar precies? Ik liep wat heen en weer. Nee, ik geloof niet dat iemand mij heeft gezien.
+  En ja &mdash; hij heeft mijn aanstelling niet verlengd. Dat vergeef ik hem niet. Vergaf. U begrijpt mij wel.&rdquo;</div>
+  <div class="citaat"><span class="wie">VIKTOR STEENWIJK</span>&ldquo;Ik stond de hele avond aan de draaibank. De nieuwe
+  plaathouders moesten af. Ik heb niemand gezien en niemand heeft mij gezien. Zo werk ik het liefst.&rdquo;</div>
+  <div class="citaat"><span class="wie">LODEWIJK BRAND</span>&ldquo;Cijfers liegen niet, meneer. Dat gat in het kasboek is
+  een kwestie van boekingen die nog moeten worden overgeschreven. De directeur wilde er maandag met mij
+  &ldquo;grondig&rdquo; naar kijken. Dat woord gebruikte hij: grondig.&rdquo;</div>
+  <div class="citaat"><span class="wie">IDA RADEMAKER</span>&ldquo;Ik heb de platen van gisternacht doorgemeten en de nieuwe
+  serie klaargelegd. Om elf uur heb ik koffie gehaald. Verder valt er over mijn avond weinig te vertellen.&rdquo;</div>
+  <div class="citaat"><span class="wie">MEINDERT ROOZEBOOM</span>&ldquo;Die ruzie? Over geld, ja. Hij wou niet borg staan.
+  Maar ik had de spectrograaf, de hele nacht &mdash; veertien mensen hebben op mijn vingers staan kijken.
+  Vraag het ze. Vraag het ze allemaal.&rdquo;</div>
+  <div class="citaat"><span class="wie">PORTIER SANDERS</span>&ldquo;De directeur nam die avond zijn draadrecorder overal
+  mee naartoe. Voor de nageschiedenis, zei hij. Het apparaat is nergens gevonden &mdash; wel het lege etui, in de koepelzaal.&rdquo;</div>
+  <div class="citaat"><span class="wie">HUISHOUDELIJK</span>&ldquo;Om kwart voor twaalf vertrokken de bezoekers. De koffiekamer
+  is de hele avond open geweest; het tijdsein van tien en elf uur is gewoon gegeven.&rdquo;</div>`},
+ {id:"D3",titel:"Het nachtrooster",tag:"puzzel",puzzel:"P1"},
+ {id:"D4",titel:"Verhoorformulier",tag:"puzzel",puzzel:"P2"},
+ {id:"D5",titel:"Zoekraster van de fotodienst",tag:"puzzel",puzzel:"P3"},
+ {id:"D6",titel:"Registratiestroken van het weerhok",tag:"puzzel",puzzel:"P14"},
+ {id:"D7",titel:"De sleutelkast",tag:"puzzel",puzzel:"P7"},
+ {id:"D8",titel:"De draadopname",tag:"puzzel",puzzel:"P8",kluisSlot:true},
+ {id:"D9",titel:"Verzegeld: aanvullend onderzoek",tag:"verzegeld",slot:true},
+ {id:"D10",titel:"Beschadigde glasplaat",tag:"puzzel",puzzel:"P11"},
+ {id:"D11",titel:"Twee opnamen van de koepelzaal",tag:"puzzel",puzzel:"P15"},
+ {id:"D12",titel:"De urenstaat met sommen",tag:"puzzel",puzzel:"P9"},
+ {id:"D13",titel:"Subsidieafrekening 1957",tag:"puzzel",puzzel:"P12"},
+ {id:"D14",titel:"De instrumentenkluis",tag:"puzzel",puzzel:"P16"},
+ {id:"D15",titel:"Blaadje in cijferschrift",tag:"puzzel",puzzel:"P13"},
+ {id:"D16",titel:"Het ophangschema van de sleutelkast",tag:"puzzel",puzzel:"P10"},
+ {id:"D17",titel:"Vezelrapport van het laboratorium",tag:"puzzel",puzzel:"P5",labSlot:true},
+ {id:"D18",titel:"Plaatsbepaling 23:00\u201323:30",tag:"puzzel",puzzel:"P6"}
+];
+const KOPPEN={D1:['57-L1','25 apr. 1957'],D2:['57-L1 bijl. 2','26 apr. 1957'],
+ D3:['57-L1 bijl. 3','aangetroffen in de portiersloge'],D4:['57-L1 bijl. 4','archiefdienst'],
+ D5:['57-L1 bijl. 5','fotodienst'],D6:['57-L1 bijl. 6','weerhok'],
+ D7:['57-L1 bijl. 7','portiersloge'],D8:['57-L1 bijl. 8','technische dienst'],
+ D9:['57-L1 bijl. 9','GERECHTELIJK LAB'],D10:['57-L1 bijl. 10','fotodienst'],
+ D11:['57-L1 bijl. 11','fotodienst'],D12:['57-L1 bijl. 12','in beslag genomen'],
+ D13:['57-L1 bijl. 13','boekhouding'],D14:['57-L1 bijl. 14','koepelzaal'],
+ D15:['57-L1 bijl. 15','persoonlijke bezittingen'],D16:['57-L1 bijl. 16','portiersloge'],
+ D17:['57-L1 bijl. 17','GERECHTELIJK LAB'],D18:['57-L1 bijl. 18','tweede verhoor']};
+function openDoc(id,stil){
+  const d=DOCS.find(x=>x.id===id);if(!d)return;
+  if(d.slot&&!S.d9open){vraagZegel();return;}
+  if(d.labSlot&&!S.d17open){vraagMeldwoord();return;}
+  huidigDoc=id;
+  if(docPad[docPad.length-1]!==id)docPad.push(id);
+  const vel=$("docVel");let binnen="";
+  if(d.kluisSlot&&!S.kluisOpen){
+    binnen='<div class="doctekst">'+
+    '<p>De draadrecorder is teruggevonden &mdash; niet in de koepelzaal, maar netjes opgeborgen achter het glaasje van de '+
+    '<b>instrumentenkluis</b>. Iemand heeft het apparaat na de moord weggesloten. De spoel zit er nog op.</p>'+
+    '<div class="puzzelblok"><h4>Achter slot</h4>'+
+    '<p style="font-size:.88rem">Zolang de kluis dicht is, valt er niets af te luisteren. De combinatie bestaat uit vier cijfers '+
+    'die Heerdink &mdash; zo noteerde de technische dienst &mdash; over vier stukken van zijn eigen administratie verdeelde.</p>'+
+    '<button class="pknop" id="naarKluis">Ga naar de instrumentenkluis</button></div></div>';
+  }
+  else if(d.id==="D7"&&!S.opgelost.P10) binnen='<div class="doctekst">'+
+    '<p>De sleutelkast uit de portiersloge, compleet met bossen. Maar de kartonnen naamlabels zijn ooit vervangen door '+
+    '<b>merktekens</b> &mdash; en het lijstje dat zegt welk merkteken bij welke haak hoort, is een schema apart.</p>'+
+    sleutelSVG(false)+
+    '<div class="puzzelblok"><h4>Kast zonder namen</h4>'+
+    '<p style="font-size:.88rem">Zonder het ophangschema valt niet te zeggen wiens bos aan welke haak hangt. '+
+    'Het schema ligt op de lichttafel.</p>'+
+    '<button class="pknop" id="naarSchema">Sla het ophangschema op</button></div></div>';
+  else if(d.id==="D5") binnen=PZ.P3.html();
+  else if(d.id==="D6") binnen=(S.opgelost.P14?PZ.P4.html():PZ.P14.html());
+  else if(d.id==="D9") binnen=htmlD9();
+  else if(d.puzzel) binnen=PZ[d.puzzel].html();
+  else binnen='<div class="doctekst">'+d.html+'</div>';
+  if(KOPPEN[d.id]) binnen='<div class="doctekst">'+briefhoofd(KOPPEN[d.id][0],KOPPEN[d.id][1])+'</div>'+binnen;
+  if(d.id==="D1") binnen+='<div class="doctekst">'+plattegrondSVG()+'</div>';
+  vel.innerHTML='<div class="velkop"><span class="dnr">'+d.id+'</span><h2>'+esc(d.titel)+'</h2>'+
+    '<button class="sluit" data-sluit="docOverlay" aria-label="sluiten">\u2715</button></div>'+binnen;
+  vel.querySelectorAll("[data-sluit]").forEach(b=>b.addEventListener("click",()=>sluitOverlay(b.dataset.sluit)));
+  if(d.kluisSlot&&!S.kluisOpen){const b=vel.querySelector("#naarKluis");if(b)b.addEventListener("click",()=>openDoc("D14"));}
+  else if(d.id==="D7"&&!S.opgelost.P10){const b=vel.querySelector("#naarSchema");if(b)b.addEventListener("click",()=>openDoc("D16"));}
+  else if(d.id==="D5")PZ.P3.koppel(vel);
+  else if(d.id==="D6")(S.opgelost.P14?PZ.P4:PZ.P14).koppel(vel);
+  else if(d.id==="D9")koppelD9(vel);
+  else if(d.puzzel&&PZ[d.puzzel].koppel)PZ[d.puzzel].koppel(vel);
+  koppelHints(vel);
+  if(!stil)openOverlay("docOverlay");else{$("docOverlay").classList.add("actief");}
+  vel.scrollTop=0;
+}
+function vraagZegel(){
+  const vel=$("docVel");docPad=[];
+  vel.innerHTML='<div class="velkop"><span class="dnr">D9</span><h2>Verzegeld dossier</h2>'+
+   '<button class="sluit" data-sluit="docOverlay" aria-label="sluiten">\u2715</button></div>'+
+   '<div class="doctekst"><p><span class="stempelRood">VERZEGELD</span></p>'+
+   '<p>Het aanvullend onderzoek is verzegeld. Op het zegel staat geen woord, alleen een aanwijzing: '+
+   '<em>&ldquo;de toegang die u zoekt, spellen de getuigen zelf&rdquo;</em> &mdash; zie het verhoorformulier (bijlage 4).</p>'+
+   '<label class="plabel">TOEGANGSWOORD (11 letters)</label>'+
+   '<input class="pinvoer" id="zegelIn" maxlength="14" autocomplete="off" style="text-transform:uppercase">'+
+   '<button class="pknop" id="zegelKnop">Verbreek het zegel</button><div class="uitkomst" id="zegelUit"></div></div>';
+  vel.querySelectorAll("[data-sluit]").forEach(b=>b.addEventListener("click",()=>sluitOverlay(b.dataset.sluit)));
+  vel.querySelector("#zegelKnop").addEventListener("click",()=>{
+    const v=(vel.querySelector("#zegelIn").value||"").trim().toUpperCase();
+    if(v===KW_CODE){S.d9open=true;bewaar();sfxGoed();toast("Zegel verbroken: bijlage 9 geopend.");tekenTafel();openDoc("D9");}
+    else{const u=vel.querySelector("#zegelUit");u.className="uitkomst fout";u.textContent="Het zegel geeft niet mee.";sfxFout();}});
+  openOverlay("docOverlay");
+}
+function vraagMeldwoord(){
+  const vel=$("docVel");docPad=[];
+  vel.innerHTML='<div class="velkop"><span class="dnr">D17</span><h2>Vezelrapport van het laboratorium</h2>'+
+   '<button class="sluit" data-sluit="docOverlay" aria-label="sluiten">\u2715</button></div>'+
+   '<div class="doctekst"><p><span class="stempelRood">ALLEEN OP MELDWOORD</span></p>'+
+   '<p>Het laboratorium geeft de uitslag alleen af tegen het meldwoord uit hun eigen memorandum. '+
+   'Dat memorandum is onderschept &mdash; maar het is in cijferschrift gesteld (bijlage 15).</p>'+
+   '<label class="plabel">MELDWOORD</label>'+
+   '<input class="pinvoer" id="labIn" maxlength="12" autocomplete="off" style="text-transform:uppercase">'+
+   '<button class="pknop" id="labKnop">Meld u bij het laboratorium</button><div class="uitkomst" id="labUit"></div>'+
+   '<button class="pknop secundair" id="naarCijfer">Bekijk het blaadje in cijferschrift</button></div>';
+  vel.querySelectorAll("[data-sluit]").forEach(b=>b.addEventListener("click",()=>sluitOverlay(b.dataset.sluit)));
+  vel.querySelector("#naarCijfer").addEventListener("click",()=>openDoc("D15"));
+  vel.querySelector("#labKnop").addEventListener("click",()=>{
+    const v=(vel.querySelector("#labIn").value||"").trim().toUpperCase();
+    if(v===MELDWOORD){S.d17open=true;bewaar();sfxGoed();toast("Meldwoord aanvaard: de uitslag wordt vrijgegeven.");tekenTafel();openDoc("D17");}
+    else{const u=vel.querySelector("#labUit");u.className="uitkomst fout";u.textContent="De laborant schudt het hoofd.";sfxFout();}});
+  openOverlay("docOverlay");
+}
+function htmlD9(){
+  return '<div class="doctekst"><p><span class="stempelRood">ZEGEL VERBROKEN</span></p>'+
+  '<h4>Sectierapport (uittreksel)</h4>'+
+  '<p class="machineschrift">E&eacute;n perimortale slagverwonding aan het achterhoofd. De slagrand is <b>smal en glad</b>, met een '+
+  'fijn <b>geribbeld profiel</b>, alsof het werktuig een geschroefde of geriffelde band droeg. In de wond: '+
+  '<b>geen glassplinters</b>, <b>geen houtvezels</b>, wel een spoor koper- en zinkoxide (messinglegering).</p>'+
+  '<h4>Tweede verhoorronde (aantekening)</h4>'+
+  '<p class="citaat">Feldkamp blijft vaag over haar avond; Brand vraagt tweemaal of het kasboek &ldquo;er nu bij hoort&rdquo;. '+
+  'Rademaker beantwoordt alles kort en kalm. Roozeboom somt veertien namen van bezoekers op.</p>'+
+  '<div class="puzzelblok"><h4>Vraag van de sectiearts</h4>'+
+  '<p style="font-size:.88rem">Welke <b>twee</b> voorwerpen van de inventarislijst vallen op grond van dit rapport af? Kruis ze aan.</p>'+
+  '<div id="d9keuze"></div>'+
+  '<button class="pknop" id="d9check">Leg voor aan de sectiearts</button><div class="uitkomst" id="d9uit"></div>'+
+  (S.feiten.includes("F2")?'':'')+'</div>'+hintBalkHTML("P5x")+'</div>';
+}
+function koppelD9(vel){
+  const doel=["glazen barometerbuis","eiken kaartenlat"];
+  const kd=vel.querySelector("#d9keuze");
+  kd.innerHTML=ASSEN.voorwerp.map((v,i)=>'<label style="display:block;margin:.25rem 0;font-size:.9rem">'+
+    '<input type="checkbox" value="'+esc(v)+'" style="transform:scale(1.3);margin-right:.5rem">'+esc(v)+'</label>').join("");
+  vel.querySelector("#d9check").addEventListener("click",()=>{
+    const gek=[...kd.querySelectorAll("input:checked")].map(i=>i.value);
+    const u=vel.querySelector("#d9uit");
+    if(gek.length===2&&doel.every(d=>gek.includes(d))){
+      u.className="uitkomst goed";u.textContent="De sectiearts knikt: die twee kunnen dit letsel niet hebben gemaakt.";
+      sfxGoed();S.opgelost.P5x=true;bewaar();
+      if(!S.feiten.includes("F2")){const b=document.createElement("button");b.className="pknop feitknop";b.textContent="Noteer feit F2";
+        b.addEventListener("click",()=>{noteerFeit("F2");b.remove();});u.after(b);}
+    }else{u.className="uitkomst fout";u.textContent="De sectiearts schuift het formulier terug: dit strookt niet met de wond.";sfxFout();}
+  });
+}
+/* ===== PUZZELS ===== */
+const PZ={};
+function feitKnopHTML(f){return S.feiten.includes(f)?"":'<button class="pknop feitknop" data-feit="'+f+'">Noteer feit '+f+'</button>';}
+function koppelFeit(vel){vel.querySelectorAll("[data-feit]").forEach(b=>b.addEventListener("click",()=>{noteerFeit(b.dataset.feit);b.remove();}));}
+/* --- P1: nachtrooster 9x9 --- */
+PZ.P1={html(){
+  let h='<div class="doctekst"><p>Het nachtrooster van de sterrenwacht: negen man, negen taakblokken van een half uur. '+
+  'Elke rij (persoon) en elke kolom (tijdblok) bevat elk taaknummer precies &eacute;&eacute;n keer, net als elk vak van drie bij drie &mdash; '+
+  'zo hield de directeur iedereen &ldquo;in beweging&rdquo;. Over de kolom van <b>23:00</b> is inkt gevallen.</p>'+
+  '<p class="mono" style="font-size:.72rem">1 koepelbediening &middot; 2 spectrograaf &middot; 3 platen wisselen &middot; 4 rekentafel &middot; '+
+  '5 bezoekers leiden &middot; 6 koffiekamer &middot; 7 tijdsein &middot; 8 donkere kamer &middot; 9 dakronde</p>'+
+  '<div style="overflow-x:auto"><table class="rooster negen"><tr><td class="aslabel rij"></td>';
+  SUD9_KOL.forEach(k=>h+='<td class="aslabel kol">'+k+'</td>');h+='</tr>';
+  for(let r=0;r<9;r++){h+='<tr><td class="aslabel rij">'+SUD9_RIJEN[r]+'</td>';
+    for(let c=0;c<9;c++){
+      const vast=SUD9_PUZ[r][c]!==0,kl=[];
+      if(c===2||c===5)kl.push("blok-r");if(r===2||r===5)kl.push("blok-b");
+      if(c===5)kl.push("onlees");if(vast)kl.push("vast");
+      h+='<td class="'+kl.join(" ")+'" data-rc="'+r+'-'+c+'">';
+      h+=vast?SUD9_PUZ[r][c]:'<input inputmode="numeric" maxlength="1" data-in="'+r+'-'+c+'" value="'+esc(S.sud9[r][c])+'">';
+      h+='</td>';}
+    h+='</tr>';}
+  h+='</table></div>';
+  if(!S.opgelost.P1)h+='<button class="pknop" id="p1check">Controleer het rooster</button><div class="uitkomst" id="p1uit"></div>';
+  else h+='<div class="uitkomst goed">Het rooster is hersteld.</div>';
+  if(S.opgelost.P1){
+    h+='<div class="puzzelblok"><h4>Aantekening van de brigadier</h4>'+
+    '<p style="font-size:.88rem">De bezoekersgroep verklaart: <em>&ldquo;wij stonden vanaf elf uur om de man bij de spectrograaf '+
+    'heen en bleven daar tot ons vertrek om kwart voor twaalf.&rdquo;</em> Wie bediende volgens het herstelde rooster om 23:00 de spectrograaf?</p>'+
+    '<select class="pselect" id="p1wie"><option value="">&mdash; kies &mdash;</option>'+
+    SUD9_RIJEN.map(n=>'<option>'+esc(n)+'</option>').join("")+'</select> '+
+    '<button class="pknop" id="p1vraag">Leg vast</button><div class="uitkomst" id="p1vuit"></div>'+feitKnopHTML("F1")+'</div>';}
+  return h+hintBalkHTML("P1")+'</div>';
+ },
+ koppel(vel){
+  vel.querySelectorAll("[data-in]").forEach(inp=>inp.addEventListener("input",()=>{
+    const[r,c]=inp.dataset.in.split("-").map(Number);
+    inp.value=inp.value.replace(/[^1-9]/g,"");S.sud9[r][c]=inp.value;bewaar();}));
+  const ck=vel.querySelector("#p1check");
+  if(ck)ck.addEventListener("click",()=>{
+    let vol=true,goed=true;
+    vel.querySelectorAll("td.fout").forEach(t=>t.classList.remove("fout"));
+    for(let r=0;r<9;r++)for(let c=0;c<9;c++){
+      if(SUD9_PUZ[r][c])continue;
+      const v=parseInt(S.sud9[r][c]||"0");
+      if(!v){vol=false;continue;}
+      if(v!==SUD9_OPL[r][c]){goed=false;vel.querySelector('[data-rc="'+r+'-'+c+'"]').classList.add("fout");}}
+    const u=vel.querySelector("#p1uit");
+    if(!vol){u.className="uitkomst fout";u.textContent="Het rooster is nog niet volledig ingevuld.";sfxFout();return;}
+    if(!goed){u.className="uitkomst fout";u.textContent="Er zitten fouten in; de aangestreepte vakjes botsen met rij, kolom of blok.";sfxFout();return;}
+    S.opgelost.P1=true;bewaar();sfxGoed();openDoc("D3",true);toast("Het nachtrooster is hersteld.");});
+  const vr=vel.querySelector("#p1vraag");
+  if(vr)vr.addEventListener("click",()=>{
+    const u=vel.querySelector("#p1vuit");
+    if(vel.querySelector("#p1wie").value==="Roozeboom"){u.className="uitkomst goed";
+      u.textContent="Roozeboom stond om 23:00 aan de spectrograaf \u2014 met veertien man om zich heen, tot kwart voor twaalf.";sfxGoed();}
+    else{u.className="uitkomst fout";u.textContent="Het herstelde rooster zegt iets anders.";sfxFout();}});
+  koppelFeit(vel);
+ }};
+/* --- P2: zweeds raadsel --- */
+PZ.P2={html(){
+  let h='<div class="doctekst"><p>Een verhoorformulier van de archiefdienst, half ingevuld en half raadsel: bij elk antwoord is '+
+  '&eacute;&eacute;n vakje <b>goudkleurig gemerkt</b>. De gemerkte letters vormen, van boven naar beneden, een woord.</p>';
+  KW.forEach((w,i)=>{
+    h+='<div class="kwrij"><span class="kwnr">'+(i+1)+'</span><span class="kwclue">'+esc(w[0])+'</span><span class="kwvakjes">';
+    const val=S.kw[i]||"";
+    for(let j=0;j<w[1].length;j++){
+      h+='<input maxlength="1" data-kw="'+i+'-'+j+'" class="'+(j===w[2]-1?"merk":"")+'" value="'+esc(val[j]||"")+'">';}
+    h+='</span></div>';});
+  if(!S.opgelost.P2)h+='<button class="pknop" id="p2check">Controleer de antwoorden</button><div class="uitkomst" id="p2uit"></div>';
+  else h+='<div class="uitkomst goed">Alle antwoorden kloppen. De gemerkte vakjes spellen het toegangswoord voor het verzegelde stuk (bijlage 9).</div>';
+  return h+hintBalkHTML("P2")+'</div>';
+ },
+ koppel(vel){
+  vel.querySelectorAll("[data-kw]").forEach(inp=>{
+    inp.addEventListener("input",()=>{
+      inp.value=inp.value.toUpperCase().replace(/[^A-Z]/g,"");
+      const[i,j]=inp.dataset.kw.split("-").map(Number);
+      let val=(S.kw[i]||"").padEnd(KW[i][1].length," ").split("");
+      val[j]=inp.value||" ";S.kw[i]=val.join("").replace(/\s+$/,"");bewaar();
+      if(inp.value){const nxt=vel.querySelector('[data-kw="'+i+'-'+(j+1)+'"]');if(nxt)nxt.focus();}});});
+  const ck=vel.querySelector("#p2check");
+  if(ck)ck.addEventListener("click",()=>{
+    const u=vel.querySelector("#p2uit");let fouten=0;
+    KW.forEach((w,i)=>{if((S.kw[i]||"").trim().toUpperCase()!==w[1])fouten++;});
+    if(!fouten){S.opgelost.P2=true;bewaar();sfxGoed();openDoc("D4",true);toast("Het formulier is compleet.");}
+    else{u.className="uitkomst fout";u.textContent="Nog niet alles klopt: "+fouten+" antwoord(en) wijken af.";sfxFout();}});
+ }};
+/* --- P6: plaatsbepaling (logigram) --- */
+PZ.P6={html(){
+  let h='<div class="doctekst"><p>Uit de tweede verhoorronde, samengevat: waar bevond ieder zich tussen 23:00 en 23:30? '+
+  'Zet een <b>\u2713</b> waar iemand w\u00e1s en een <b>\u2717</b> waar diegene niet was; elke rij krijgt precies &eacute;&eacute;n vinkje.</p>'+
+  '<div class="citaat" style="font-size:.84rem">1. De uitleg in de meridiaanzaal werd door Feldkamp gevolgd vanaf de deur; zij gaf hem niet \u2014 en de man die geen moment van zijn instrument week evenmin.<br>'+
+  '2. Brand stond niet bij de bezoekersgroep en kwam de koffiekamer die nacht niet in.<br>'+
+  '3. De uitleg kwam van Steenwijk of van Rademaker.<br>'+
+  '4. De portier zag Rademaker de koffiekamer binnengaan; op de hoofdtrap is zij niet geweest en uitleg gaf zij niet.<br>'+
+  '5. De bezoekers stonden om de spectrograafbediener heen; de portier passeerde Brand op de trap. Precies &eacute;&eacute;n personeelslid werd door niemand gezien.</div>'+
+  '<div style="overflow-x:auto"><table class="rooster lg"><tr><td class="aslabel rij"></td>';
+  LG_POSN.forEach(p=>h+='<td class="aslabel kol">'+esc(p)+'</td>');h+='</tr>';
+  LG_PERS.forEach(p=>{h+='<tr><td class="aslabel rij">'+esc(p)+'</td>';
+    LG_POSN.forEach(q=>{const k=p+"|"+q,v=S.lg[k]||0;
+      h+='<td data-lg="'+esc(k)+'" class="'+(v===1?"vink":v===2?"kruis":"")+'">'+(v===1?"\u2713":v===2?"\u2717":"")+'</td>';});
+    h+='</tr>';});
+  h+='</table></div>';
+  if(!S.opgelost.P6)h+='<button class="pknop" id="p6check">Controleer de plaatsbepaling</button><div class="uitkomst" id="p6uit"></div>';
+  else{h+='<div class="uitkomst goed">De plaatsbepaling staat vast.</div>'+
+   '<div class="puzzelblok"><h4>Vraag van de brigadier</h4>'+
+   '<p style="font-size:.88rem">Wiens e&iacute;gen verklaring over die avond strookt niet met deze plaatsbepaling &mdash; maar levert juist daardoor een alibi op?</p>'+
+   '<select class="pselect" id="p6wie"><option value="">&mdash; kies &mdash;</option>'+
+   LG_PERS.map(n=>'<option>'+esc(n)+'</option>').join("")+'</select> '+
+   '<button class="pknop" id="p6vraag">Leg vast</button><div class="uitkomst" id="p6vuit"></div>'+feitKnopHTML("F6")+'</div>';}
+  return h+hintBalkHTML("P6")+'</div>';
+ },
+ koppel(vel){
+  vel.querySelectorAll("[data-lg]").forEach(td=>td.addEventListener("click",()=>{
+    if(S.opgelost.P6)return;
+    const k=td.dataset.lg,v=((S.lg[k]||0)+1)%3;S.lg[k]=v;bewaar();
+    td.className=v===1?"vink":v===2?"kruis":"";td.textContent=v===1?"\u2713":v===2?"\u2717":"";sfxTik();}));
+  const ck=vel.querySelector("#p6check");
+  if(ck)ck.addEventListener("click",()=>{
+    const u=vel.querySelector("#p6uit");let goed=true;
+    LG_PERS.forEach(p=>{LG_POSN.forEach(q=>{
+      const isV=(S.lg[p+"|"+q]||0)===1;
+      if(isV!==(LG_DOEL[p]===q))goed=false;});});
+    if(goed){S.opgelost.P6=true;bewaar();sfxGoed();openDoc("D18",true);toast("De plaatsbepaling staat vast.");}
+    else{u.className="uitkomst fout";u.textContent="Zo strookt het niet met alle vijf aanwijzingen. Loop ze nog eens langs.";sfxFout();}});
+  const vr=vel.querySelector("#p6vraag");
+  if(vr)vr.addEventListener("click",()=>{
+    const u=vel.querySelector("#p6vuit");
+    if(vel.querySelector("#p6wie").value==="Steenwijk"){u.className="uitkomst goed";
+      u.textContent="Steenwijk beweerde alleen in de werkplaats te zijn \u2014 maar drie bezoekers zagen hem uitleg geven in de meridiaanzaal.";sfxGoed();}
+    else{u.className="uitkomst fout";u.textContent="Die verklaring spoort juist w\u00e9l met de plaatsbepaling.";sfxFout();}});
+  koppelFeit(vel);
+ }};
+/* --- P14: registratiestroken ordenen --- */
+PZ.P14={html(){
+  let h='<div class="doctekst"><p>De registratietrommel van het weerhok is bij het uitnemen in zes stroken geknipt en '+
+  'door elkaar geraakt. Elke strook verwijst naar wat er vlak v&oacute;&oacute;r gebeurde. Leg ze in de juiste volgorde; '+
+  'pas dan zijn de metingen van die nacht te lezen.</p><div id="strokenLijst">';
+  S.chrono.forEach((si,pos)=>{
+    h+='<div class="strook"><div class="pijlen">'+
+    '<button data-omhoog="'+pos+'" '+(pos===0?"disabled":"")+'>\u25B2</button>'+
+    '<button data-omlaag="'+pos+'" '+(pos===5?"disabled":"")+'>\u25BC</button></div>'+
+    '<div><span class="snr">positie '+(pos+1)+'</span><br>'+esc(CHRONO[si])+'</div></div>';});
+  h+='</div>';
+  if(!S.opgelost.P14)h+='<button class="pknop" id="p14check">Leg de volgorde vast</button><div class="uitkomst" id="p14uit"></div>';
+  return h+hintBalkHTML("P14")+'</div>';
+ },
+ koppel(vel){
+  const wissel=(a,b)=>{const t=S.chrono[a];S.chrono[a]=S.chrono[b];S.chrono[b]=t;bewaar();openDoc("D6",true);sfxTik();};
+  vel.querySelectorAll("[data-omhoog]").forEach(b=>b.addEventListener("click",()=>{const p=+b.dataset.omhoog;if(p>0)wissel(p,p-1);}));
+  vel.querySelectorAll("[data-omlaag]").forEach(b=>b.addEventListener("click",()=>{const p=+b.dataset.omlaag;if(p<5)wissel(p,p+1);}));
+  const ck=vel.querySelector("#p14check");
+  if(ck)ck.addEventListener("click",()=>{
+    const u=vel.querySelector("#p14uit");
+    if(S.chrono.every((v,i)=>v===i)){S.opgelost.P14=true;bewaar();sfxGoed();toast("De stroken sluiten op elkaar aan; de metingen zijn leesbaar.");openDoc("D6",true);}
+    else{u.className="uitkomst fout";u.textContent="Zo sluiten de verwijzingen niet op elkaar aan.";sfxFout();}});
+ }};
+/* --- P4: tijdvak-afleiding (na P14, in D6) --- */
+PZ.P4={html(){
+  let h='<div class="doctekst"><p><span class="stempelRood">METINGEN LEESBAAR</span></p>'+
+  '<p>De herstelde registratie, gelegd naast het koepellogboek:</p>'+
+  '<div class="machineschrift" style="background:rgba(255,255,255,.35);padding:.6rem .7rem;border:1px solid var(--lijn);border-radius:3px">'+
+  '22:00 &mdash; bezoekers binnen (drukuitslag trap)<br>'+
+  '22:58 &mdash; koepel opent voor de komeetstand; belichting gestart, doorlopende streep<br>'+
+  '<b>23:05 &mdash; koepel draait opnieuw \u2014 g&eacute;&eacute;n waarneemdoel in het logboek; de belichtingsstreep breekt af</b><br>'+
+  '23:22 &mdash; windstoot, verder vlak<br>'+
+  '<b>23:40 &mdash; de belichtingsstreep wordt hervat, handschrift onbekend</b><br>'+
+  '23:45 &mdash; bezoekers tekenen uit bij de portier<br>23:52 &mdash; alarm: portier vindt het slachtoffer</div>'+
+  '<p>De kijker fotografeerde die nacht automatisch: zolang er iemand toezicht hield, liep de streep door. '+
+  'Alleen de dader had reden de koepel te verdraaien en de belichting te onderbreken &mdash; en later het spoor te maskeren.</p>'+
+  '<div class="puzzelblok"><h4>Het tijdvak van de moord</h4>'+
+  '<p style="font-size:.88rem">Tussen welke twee tijdstippen moet de moord hebben plaatsgevonden?</p>'+
+  '<label class="plabel">VAN</label><select class="pselect" id="p4van"><option value="">&mdash;</option>'+
+  ["22:00","22:58","23:05","23:22","23:40","23:45"].map(t=>'<option>'+t+'</option>').join("")+'</select>'+
+  '<label class="plabel">TOT</label><select class="pselect" id="p4tot"><option value="">&mdash;</option>'+
+  ["22:58","23:05","23:22","23:40","23:45","23:52"].map(t=>'<option>'+t+'</option>').join("")+'</select><br>'+
+  '<button class="pknop" id="p4check">Leg het tijdvak vast</button><div class="uitkomst" id="p4uit"></div>'+
+  (S.opgelost.P4?feitKnopHTML("F4"):"")+'</div>';
+  return h+hintBalkHTML("P4")+'</div>';
+ },
+ koppel(vel){
+  const ck=vel.querySelector("#p4check");
+  if(ck)ck.addEventListener("click",()=>{
+    const u=vel.querySelector("#p4uit");
+    if(vel.querySelector("#p4van").value==="23:05"&&vel.querySelector("#p4tot").value==="23:40"){
+      S.opgelost.P4=true;bewaar();sfxGoed();openDoc("D6",true);toast("Het tijdvak staat vast: 23:05\u201323:40.");}
+    else{u.className="uitkomst fout";u.textContent="De registratie wijst op een ander venster.";sfxFout();}});
+  koppelFeit(vel);
+ }};
+/* --- P5: vezelrapport (D17, na meldwoord) --- */
+PZ.P5={html(){
+  let h='<div class="doctekst"><p><span class="stempelRood">UITSLAG VRIJGEGEVEN</span></p>'+
+  '<p>Vergelijking van de stoffen op de kleding van het slachtoffer met stof- en vezelmonsters per ruimte:</p>'+
+  '<div style="overflow-x:auto"><table class="docTabel"><tr><th>ruimte</th><th>metaalslijpsel</th><th>krijt/grafiet</th><th>fixeerzout</th><th>booglampkool</th><th>teerdruppels</th></tr>'+
+  '<tr><td>rekenkamer</td><td>&mdash;</td><td>\u25CF</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>'+
+  '<tr><td>koepelzaal</td><td>\u25CF</td><td>&mdash;</td><td>&mdash;</td><td>\u25CF</td><td>&mdash;</td></tr>'+
+  '<tr><td>dakplatform</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>\u25CF</td></tr>'+
+  '<tr><td>instrumentwerkplaats</td><td>\u25CF</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>'+
+  '<tr><td>platenarchief</td><td>&mdash;</td><td>&mdash;</td><td>\u25CF</td><td>\u25CF</td><td>&mdash;</td></tr></table></div>'+
+  '<p class="machineschrift">Op de kleding aangetroffen: <b>fixeerzoutkristallen</b> &eacute;n <b>booglampkool</b> (van de kopieerlamp). '+
+  'Geen metaalslijpsel, geen krijt, geen teer.</p>'+
+  '<div class="puzzelblok"><h4>Vraag van het laboratorium</h4>'+
+  '<p style="font-size:.88rem">In welke ruimte komen be&iacute;de aangetroffen stoffen samen voor?</p>'+
+  '<select class="pselect" id="p5waar"><option value="">&mdash; kies &mdash;</option>'+
+  ASSEN.locatie.map(l=>'<option>'+esc(l)+'</option>').join("")+'</select> '+
+  '<button class="pknop" id="p5check">Leg vast</button><div class="uitkomst" id="p5uit"></div>'+
+  (S.opgelost.P5?feitKnopHTML("F5"):"")+'</div>';
+  return h+hintBalkHTML("P5")+'</div>';
+ },
+ koppel(vel){
+  const ck=vel.querySelector("#p5check");
+  if(ck)ck.addEventListener("click",()=>{
+    const u=vel.querySelector("#p5uit");
+    if(vel.querySelector("#p5waar").value==="platenarchief"){S.opgelost.P5=true;bewaar();sfxGoed();openDoc("D17",true);
+      toast("Alleen het platenarchief verklaart beide stoffen.");}
+    else{u.className="uitkomst fout";u.textContent="In die ruimte komen de aangetroffen stoffen niet samen voor.";sfxFout();}});
+  koppelFeit(vel);
+ }};
+/* --- P13: cijferschrift --- */
+PZ.P13={html(){
+  let h='<div class="doctekst"><p>Een blaadje uit de binnenzak van het slachtoffer, in machineschrift &mdash; maar elke letter is '+
+  'over hetzelfde aantal plaatsen in het alfabet doorgeschoven:</p>'+
+  '<div class="machineschrift" style="background:rgba(255,255,255,.35);padding:.6rem .7rem;border:1px solid var(--lijn);border-radius:3px;word-break:break-word">'+esc(GEHEIM)+'</div>'+
+  '<div class="puzzelblok"><h4>Terugschuiven</h4>'+
+  '<label class="plabel">VERSCHUIVING (1\u201325)</label>'+
+  '<input class="pinvoer" id="p13shift" inputmode="numeric" maxlength="2" style="max-width:90px">'+
+  '<button class="pknop" id="p13check">Ontcijfer</button><div class="uitkomst" id="p13uit"></div><div id="p13klaar"></div></div>';
+  if(S.opgelost.P13){
+    const dec=GEHEIM.replace(/[A-Z]/g,ch=>String.fromCharCode((ch.charCodeAt(0)-65-SHIFT+26)%26+65));
+    h+='<div class="machineschrift" style="margin-top:.5rem;background:#f7f0dd;padding:.6rem .7rem;border:1px dashed var(--inktlicht);border-radius:3px;word-break:break-word">'+esc(dec)+'</div>'+
+    '<p class="mono" style="font-size:.78rem;margin-top:.5rem">Aantekening op de achterzijde, in potlood: <b>&ldquo;schijf IV = de verschuiving zelf&rdquo;</b>.</p>';}
+  return h+hintBalkHTML("P13")+'</div>';
+ },
+ koppel(vel){
+  const ck=vel.querySelector("#p13check");
+  if(ck)ck.addEventListener("click",()=>{
+    const u=vel.querySelector("#p13uit"),k=parseInt(vel.querySelector("#p13shift").value||"0");
+    if(!(k>=1&&k<=25)){u.className="uitkomst fout";u.textContent="Kies een verschuiving tussen 1 en 25.";sfxFout();return;}
+    const dec=GEHEIM.replace(/[A-Z]/g,ch=>String.fromCharCode((ch.charCodeAt(0)-65-k+26)%26+65));
+    vel.querySelector("#p13klaar").innerHTML='<div class="machineschrift" style="margin-top:.5rem;background:#f7f0dd;padding:.6rem .7rem;border:1px dashed var(--inktlicht);border-radius:3px;word-break:break-word">'+esc(dec)+'</div>';
+    if(k===SHIFT){u.className="uitkomst goed";u.textContent="Leesbaar Nederlands \u2014 het memorandum is ontcijferd; onthoud de verschuiving.";
+      if(!S.opgelost.P13){S.opgelost.P13=true;bewaar();sfxGoed();openDoc("D15",true);}}
+    else{u.className="uitkomst fout";u.textContent="Dat levert wartaal op.";sfxFout();}});
+ }};
+/* --- P3: woordzoeker + eindvraag --- */
+PZ.P3={html(){
+  let h='<div class="doctekst"><p>De fotodienst legde de inventaris van de koepelzaal vast in een zoekraster: elk aangetroffen '+
+  'voorwerp staat er &eacute;&eacute;n keer in, in een van de acht richtingen. Tik de <b>eerste</b> en daarna de <b>laatste</b> letter van een woord.</p>'+
+  '<div style="overflow-x:auto"><table class="rooster wz">';
+  for(let r=0;r<13;r++){h+='<tr>';
+    for(let c=0;c<13;c++){
+      const gevonden=S.wzGevonden.some(w=>WZ_POS[w].some(p=>p[0]===r&&p[1]===c));
+      const kies=S.wzKies&&S.wzKies[0]===r&&S.wzKies[1]===c;
+      h+='<td data-wz="'+r+'-'+c+'" class="'+(gevonden?"gevonden":kies?"kies":"")+'">'+WZ_GRID[r][c]+'</td>';}
+    h+='</tr>';}
+  h+='</table></div><div class="wz-lijst">'+WZ_WOORDEN.map(w=>'<span class="'+(S.wzGevonden.includes(w)?"af":"")+'">'+w.toLowerCase()+'</span>').join("")+'</div>';
+  h+='<h4>Inventarislijst van de koepelzaal (taxateur, feb. 1957)</h4><p class="mono" style="font-size:.76rem">'+
+   'statiefvoet (gietijzer) \u00b7 barometerbuis (glas) \u00b7 kaartenlat (eiken) \u00b7 oliekan (koper) \u00b7 oculair \u00b7 passer \u00b7 chronometer \u00b7 '+
+   'plaathouder \u00b7 draadkruis \u00b7 stofhoes \u00b7 lantaarn \u00b7 <b>contragewicht (messing)</b></p>';
+  const alles=S.wzGevonden.length===WZ_WOORDEN.length;
+  if(!alles)h+='<div class="uitkomst">Gevonden: '+S.wzGevonden.length+' van de '+WZ_WOORDEN.length+'.</div>';
+  else if(!S.opgelost.P15)h+='<div class="puzzelblok"><h4>E&eacute;n vraag blijft</h4>'+
+   '<p style="font-size:.88rem">Alle woorden zijn gevonden &mdash; maar v&oacute;&oacute;r de fotodienst de slotvraag vrijgeeft, wil zij dat u de '+
+   'twee opnamen van de koepelzaal vergelijkt (bijlage 11). <em>&ldquo;Eerst kijken, dan concluderen.&rdquo;</em></p>'+
+   '<button class="pknop" id="naarOpnamen">Open de twee opnamen</button></div>';
+  else{h+='<div class="puzzelblok"><h4>Slotvraag van de fotodienst</h4>'+
+   '<p style="font-size:.88rem">Welk voorwerp van de inventarislijst ontbreekt in het raster &mdash; en dus in de koepelzaal?</p>'+
+   '<select class="pselect" id="p3wat"><option value="">&mdash; kies &mdash;</option>'+
+   ["statiefvoet","barometerbuis","kaartenlat","oliekan","oculair","passer","chronometer","plaathouder","draadkruis","stofhoes","lantaarn","contragewicht"].map(v=>'<option>'+v+'</option>').join("")+
+   '</select> <button class="pknop" id="p3check">Leg vast</button><div class="uitkomst" id="p3uit"></div>'+
+   (S.opgelost.P3?feitKnopHTML("F3"):"")+'</div>';}
+  return h+hintBalkHTML("P3")+'</div>';
+ },
+ koppel(vel){
+  vel.querySelectorAll("[data-wz]").forEach(td=>td.addEventListener("click",()=>{
+    const[r,c]=td.dataset.wz.split("-").map(Number);
+    if(!S.wzKies){S.wzKies=[r,c];bewaar();td.classList.add("kies");sfxTik();return;}
+    const[a,b]=S.wzKies;S.wzKies=null;
+    let raak=null;
+    for(const w of WZ_WOORDEN){
+      if(S.wzGevonden.includes(w))continue;
+      const p=WZ_POS[w],e1=p[0],e2=p[p.length-1];
+      if((e1[0]===a&&e1[1]===b&&e2[0]===r&&e2[1]===c)||(e2[0]===a&&e2[1]===b&&e1[0]===r&&e1[1]===c)){raak=w;break;}}
+    if(raak){S.wzGevonden.push(raak);bewaar();sfxGoed();
+      if(S.wzGevonden.length===WZ_WOORDEN.length)toast("Alle elf woorden gevonden.");}
+    else sfxFout();
+    bewaar();openDoc("D5",true);}));
+  const no=vel.querySelector("#naarOpnamen");if(no)no.addEventListener("click",()=>openDoc("D11"));
+  const ck=vel.querySelector("#p3check");
+  if(ck)ck.addEventListener("click",()=>{
+    const u=vel.querySelector("#p3uit");
+    if(vel.querySelector("#p3wat").value==="contragewicht"){S.opgelost.P3=true;bewaar();sfxGoed();openDoc("D5",true);
+      toast("Het contragewicht ontbreekt \u2014 en is nooit teruggevonden.");}
+    else{u.className="uitkomst fout";u.textContent="Dat voorwerp staat w\u00e9l in het raster.";sfxFout();}});
+  koppelFeit(vel);
+ }};
+/* --- P15: twee opnamen (verschillen) --- */
+PZ.P15={html(){
+  let h='<div class="doctekst"><p>Twee opnamen van de koepelzaal, gemaakt door de automatische registratiecamera: '+
+  '&eacute;&eacute;n om 22:40, &eacute;&eacute;n om 23:50. Tik in de <b>onderste</b> opname de tien plaatsen aan waar iets veranderd is.</p>'+
+  '<div class="verschilWrap"><svg viewBox="0 0 380 240">'+koepelSVG(false)+'</svg></div>'+
+  '<div class="verschilWrap"><svg viewBox="0 0 380 240" id="vscRechts">'+koepelSVG(true);
+  VSC_ZONES.forEach((z,i)=>{
+    const raak=S.versch.includes(i);
+    h+='<circle data-vsc="'+i+'" cx="'+z[0]+'" cy="'+z[1]+'" r="'+z[2]+'" fill="'+(raak?"rgba(164,50,42,.22)":"transparent")+'" stroke="'+(raak?"#a4322a":"none")+'" stroke-width="2.5" style="cursor:pointer"/>';});
+  h+='</svg></div><div class="vscTeller">Gevonden: '+S.versch.length+'/10 \u00b7 missers: '+S.vscMis+'</div>';
+  if(S.opgelost.P15)h+='<div class="uitkomst goed">Alle tien verschillen zijn gemarkeerd. Het opvallendste: het contragewicht dat om 22:40 nog aan de as hing. De fotodienst geeft haar slotvraag vrij (bijlage 5).</div>';
+  return h+hintBalkHTML("P15")+'</div>';
+ },
+ koppel(vel){
+  const svg=vel.querySelector("#vscRechts");
+  svg.addEventListener("click",ev=>{
+    if(S.opgelost.P15)return;
+    const c=ev.target.closest("[data-vsc]");
+    if(c){const i=+c.dataset.vsc;
+      if(!S.versch.includes(i)){S.versch.push(i);bewaar();sfxGoed();toast("Gevonden: "+VSC_ZONES[i][3]+".");
+        if(S.versch.length===10){S.opgelost.P15=true;bewaar();}
+        openDoc("D11",true);}}
+    else{S.vscMis++;bewaar();sfxFout();openDoc("D11",true);}});
+ }};
+/* --- P7: sleutelkast (na P10) --- */
+PZ.P7={html(){
+  let h='<div class="doctekst"><p>Met het ophangschema ernaast is de kast weer te lezen: elk merkteken hoort bij &eacute;&eacute;n haak, '+
+  'elke haak bij &eacute;&eacute;n naam. Vergelijk de baarden met het slotprofiel <b>K7</b> van het platenarchief: alleen een sleutel die op '+
+  'alle vier de posities gelijk is, past.</p>'+sleutelSVG(true)+
+  '<div class="puzzelblok"><h4>Wie kon het archief in?</h4>'+
+  '<p style="font-size:.88rem">Kruis de personen aan met een passende sleutel aan hun bos.</p><div id="p7keuze">'+
+  LG_PERS.map(n=>'<label style="display:block;margin:.25rem 0;font-size:.9rem"><input type="checkbox" value="'+esc(n)+'" style="transform:scale(1.3);margin-right:.5rem">'+esc(n)+'</label>').join("")+
+  '</div><button class="pknop" id="p7check">Leg vast</button><div class="uitkomst" id="p7uit"></div>'+
+  (S.opgelost.P7?feitKnopHTML("F7"):"")+'</div>';
+  return h+hintBalkHTML("P7")+'</div>';
+ },
+ koppel(vel){
+  const ck=vel.querySelector("#p7check");
+  if(ck)ck.addEventListener("click",()=>{
+    const gek=[...vel.querySelectorAll("#p7keuze input:checked")].map(i=>i.value).sort();
+    const doel=[...BOS_GOED].sort();const u=vel.querySelector("#p7uit");
+    if(gek.length===doel.length&&doel.every((d,i)=>gek[i]===d)){
+      S.opgelost.P7=true;bewaar();sfxGoed();openDoc("D7",true);toast("Drie bossen dragen een passende sleutel.");}
+    else{u.className="uitkomst fout";u.textContent="Leg de baarden er nog eens naast; dit klopt niet met profiel K7.";sfxFout();}});
+  koppelFeit(vel);
+ }};
+/* --- P8: draadopname (anagrammen) --- */
+PZ.P8={html(){
+  let h='<div class="doctekst"><p><span class="stempelRood">KLUIS GEOPEND</span></p>'+
+  '<p>De spoel is beschadigd: de technische dienst kon het slot van de opname uitschrijven, maar zes woorden kwamen '+
+  'verhaspeld van de draad. Herstel ze &mdash; elk woord gebruikt precies de gegeven letters.</p><div class="machineschrift">';
+  h+='</div>';
+  ANAG.forEach((a,i)=>{
+    h+='<div class="kwrij"><span class="kwnr">'+(i+1)+'</span><span class="kwclue mono">'+a[0]+'</span>'+
+    '<input class="pinvoer" style="max-width:190px;text-transform:uppercase" maxlength="'+a[1].length+'" data-anag="'+i+'" value="'+esc(S.anag[i]||"")+'">'+
+    '</div>';});
+  if(!S.opgelost.P8a)h+='<button class="pknop" id="p8check">Leg de woorden op de band</button><div class="uitkomst" id="p8uit"></div>';
+  else{
+    let volt="\u201c... en daarom, dames en heren van het bestuur, doe ik <b>maandag</b> de <b>aankondiging</b>: op de <b>platen</b> van deze sterrenwacht staat zij, vastgelegd in m\u00edjn <b>metingen</b>. De <b>komeet</b> is voorbereid... de <b>ontdekking</b> is, met alle respect voor het rekenwerk van anderen, de m\u00edjne. \u2014 T.H.\u201d";
+    h+='<div class="citaat">'+volt+'</div>'+
+    '<div class="puzzelblok"><h4>Wat bewijst de band?</h4>'+
+    '<p style="font-size:.88rem">Iemand hoorde dit &mdash; en wist wat het betekende. Welk motief legt de opname bloot?</p>'+
+    '<select class="pselect" id="p8motief"><option value="">&mdash; kies &mdash;</option>'+
+    ASSEN.motief.map(m=>'<option>'+esc(m)+'</option>').join("")+'</select> '+
+    '<button class="pknop" id="p8vraag">Leg vast</button><div class="uitkomst" id="p8vuit"></div>'+
+    (S.opgelost.P8?feitKnopHTML("F8"):"")+'</div>';}
+  return h+hintBalkHTML("P8")+'</div>';
+ },
+ koppel(vel){
+  vel.querySelectorAll("[data-anag]").forEach(inp=>inp.addEventListener("input",()=>{
+    inp.value=inp.value.toUpperCase().replace(/[^A-Z]/g,"");S.anag[+inp.dataset.anag]=inp.value;bewaar();}));
+  const ck=vel.querySelector("#p8check");
+  if(ck)ck.addEventListener("click",()=>{
+    const u=vel.querySelector("#p8uit");
+    const fouten=ANAG.filter((a,i)=>(S.anag[i]||"").trim()!==a[1]).length;
+    if(!fouten){S.opgelost.P8a=true;bewaar();sfxGoed();openDoc("D8",true);toast("De opname is hersteld.");}
+    else{u.className="uitkomst fout";u.textContent="Nog niet alle woorden kloppen ("+fouten+" wijken af).";sfxFout();}});
+  const vr=vel.querySelector("#p8vraag");
+  if(vr)vr.addEventListener("click",()=>{
+    const u=vel.querySelector("#p8vuit");
+    if(vel.querySelector("#p8motief").value==="gestolen ontdekking"){S.opgelost.P8=true;bewaar();sfxGoed();openDoc("D8",true);
+      toast("De directeur eiste andermans vondst op.");}
+    else{u.className="uitkomst fout";u.textContent="Daar spreekt de band niet over.";sfxFout();}});
+  koppelFeit(vel);
+ }};
+/* --- P9: urenstaat met sommen (killer) --- */
+PZ.P9={html(){
+  const kooiVan={};KILLER_KOOIEN.forEach((k,i)=>k.forEach(c=>kooiVan[c[0]+"-"+c[1]]=i));
+  const eerste={};KILLER_KOOIEN.forEach((k,i)=>{const s=[...k].sort((a,b)=>a[0]-b[0]||a[1]-b[1])[0];eerste[s[0]+"-"+s[1]]=i;});
+  let h='<div class="doctekst"><p>Een urenstaat uit de la van het slachtoffer, in zijn eigen systeem: zes bij zes, elk cijfer '+
+  '1 tot en met 6 &eacute;&eacute;n keer per rij, kolom en blok van twee bij drie. De gestippelde groepen tellen op tot het kleine '+
+  'getal linksboven; binnen een groep verschillen de cijfers. E&eacute;n vakje is rood omcirkeld.</p>'+
+  '<div style="overflow-x:auto"><table class="rooster">';
+  for(let r=0;r<6;r++){h+='<tr>';
+    for(let c=0;c<6;c++){
+      const kl=[],ki=kooiVan[r+"-"+c];
+      if(c===2)kl.push("blok-r");if(r===1||r===3)kl.push("blok-b");
+      if(r===0||kooiVan[(r-1)+"-"+c]!==ki)kl.push("kooi-t");
+      if(c===0||kooiVan[r+"-"+(c-1)]!==ki)kl.push("kooi-l");
+      if(r===5||kooiVan[(r+1)+"-"+c]!==ki)kl.push("kooi-b2");
+      if(c===5||kooiVan[r+"-"+(c+1)]!==ki)kl.push("kooi-r2");
+      if(r===STER[0]&&c===STER[1])kl.push("ster");
+      h+='<td class="'+kl.join(" ")+'" data-rc9="'+r+'-'+c+'">';
+      if(eerste[r+"-"+c]!==undefined)h+='<span class="kooisom">'+KILLER_SOM[eerste[r+"-"+c]]+'</span>';
+      h+='<input inputmode="numeric" maxlength="1" data-kin="'+r+'-'+c+'" value="'+esc(S.killer[r][c])+'"></td>';}
+    h+='</tr>';}
+  h+='</table></div>';
+  if(!S.opgelost.P9)h+='<button class="pknop" id="p9check">Controleer de staat</button><div class="uitkomst" id="p9uit"></div>';
+  else h+='<div class="uitkomst goed">De staat klopt. Noteer het cijfer in het omcirkelde vakje: dat is schijf I van de kluis.</div>';
+  return h+hintBalkHTML("P9")+'</div>';
+ },
+ koppel(vel){
+  vel.querySelectorAll("[data-kin]").forEach(inp=>inp.addEventListener("input",()=>{
+    const[r,c]=inp.dataset.kin.split("-").map(Number);
+    inp.value=inp.value.replace(/[^1-6]/g,"");S.killer[r][c]=inp.value;bewaar();}));
+  const ck=vel.querySelector("#p9check");
+  if(ck)ck.addEventListener("click",()=>{
+    const u=vel.querySelector("#p9uit");let vol=true,goed=true;
+    vel.querySelectorAll("td.fout").forEach(t=>t.classList.remove("fout"));
+    for(let r=0;r<6;r++)for(let c=0;c<6;c++){
+      const v=parseInt(S.killer[r][c]||"0");
+      if(!v){vol=false;continue;}
+      if(v!==KILLER_OPL[r][c]){goed=false;vel.querySelector('[data-rc9="'+r+'-'+c+'"]').classList.add("fout");}}
+    if(!vol){u.className="uitkomst fout";u.textContent="De staat is nog niet volledig.";sfxFout();return;}
+    if(!goed){u.className="uitkomst fout";u.textContent="De aangestreepte vakjes botsen met een som, rij, kolom of blok.";sfxFout();return;}
+    S.opgelost.P9=true;bewaar();sfxGoed();openDoc("D12",true);toast("De urenstaat klopt.");});
+ }};
+/* --- P10: ophangschema (symboolrooster) --- */
+PZ.P10={html(){
+  let h='<div class="doctekst"><p>Het ophangschema van de sleutelkast, door de portier bijgehouden in zijn eigen tekens: zes bij zes, '+
+  'elk merkteken &eacute;&eacute;n keer per rij, kolom en blok van twee bij drie. De vakjes op de <b>doorlopende diagonaal</b> (goud omrand) geven, '+
+  'van linksboven naar rechtsonder, de volgorde van de haken I tot en met VI.</p>'+
+  '<p style="font-size:.85rem">Kies eerst een merkteken en tik dan de vakjes aan.</p>'+
+  '<div class="symknoppen">'+MUR_SYM.map((s,i)=>'<button data-sym="'+(i+1)+'">'+s+'</button>').join("")+'</div>'+
+  '<div style="overflow-x:auto"><table class="rooster">';
+  for(let r=0;r<6;r++){h+='<tr>';
+    for(let c=0;c<6;c++){
+      const kl=["symcel"];if(c===2)kl.push("blok-r");if(r===1||r===3)kl.push("blok-b");
+      if(r===c)kl.push("diag");if(MUR_PUZ[r][c])kl.push("vast");
+      h+='<td class="'+kl.join(" ")+'" data-mur="'+r+'-'+c+'">'+(S.mur[r][c]?MUR_SYM[S.mur[r][c]-1]:"")+'</td>';}
+    h+='</tr>';}
+  h+='</table></div>';
+  if(!S.opgelost.P10)h+='<button class="pknop" id="p10check">Controleer het schema</button><div class="uitkomst" id="p10uit"></div>';
+  else h+='<div class="uitkomst goed">Het schema klopt. De diagonaal geeft de haakvolgorde; de sleutelkast (bijlage 7) is nu te lezen.</div>';
+  return h+hintBalkHTML("P10")+'</div>';
+ },
+ koppel(vel){
+  let actief=1;
+  const knoppen=vel.querySelectorAll("[data-sym]");
+  knoppen.forEach(b=>b.addEventListener("click",()=>{actief=+b.dataset.sym;
+    knoppen.forEach(x=>x.classList.toggle("actief",x===b));sfxTik();}));
+  if(knoppen[0])knoppen[0].classList.add("actief");
+  vel.querySelectorAll("[data-mur]").forEach(td=>td.addEventListener("click",()=>{
+    if(S.opgelost.P10)return;
+    const[r,c]=td.dataset.mur.split("-").map(Number);
+    if(MUR_PUZ[r][c])return;
+    S.mur[r][c]=(S.mur[r][c]===actief)?0:actief;bewaar();
+    td.textContent=S.mur[r][c]?MUR_SYM[S.mur[r][c]-1]:"";sfxTik();}));
+  const ck=vel.querySelector("#p10check");
+  if(ck)ck.addEventListener("click",()=>{
+    const u=vel.querySelector("#p10uit");let vol=true,goed=true;
+    for(let r=0;r<6;r++)for(let c=0;c<6;c++){
+      if(!S.mur[r][c]){vol=false;continue;}
+      if(S.mur[r][c]!==MUR_OPL[r][c])goed=false;}
+    if(!vol){u.className="uitkomst fout";u.textContent="Het schema is nog niet volledig.";sfxFout();return;}
+    if(!goed){u.className="uitkomst fout";u.textContent="Ergens staat een teken dubbel in rij, kolom of blok.";sfxFout();return;}
+    S.opgelost.P10=true;bewaar();sfxGoed();openDoc("D16",true);toast("Het ophangschema klopt \u2014 de sleutelkast is te lezen.");tekenTafel();});
+ }};
+/* --- P11: beschadigde glasplaat (nonogram) --- */
+PZ.P11={html(){
+  let h='<div class="doctekst"><p>Een glasplaat uit het archief, gebarsten en deels afgebladderd. De fotodienst noteerde per rij en '+
+  'kolom hoeveel aaneengesloten donkere vlakken er stonden, in volgorde, met minstens &eacute;&eacute;n licht vakje ertussen. Herstel het beeld.</p>'+
+  '<div style="overflow-x:auto"><table class="rooster nono"><tr><td class="clue"></td>';
+  for(let c=0;c<10;c++)h+='<td class="clue">'+CC[c].join("\n")+'</td>';h+='</tr>';
+  for(let r=0;r<10;r++){h+='<tr><td class="clue rij">'+RC[r].join(" ")+'</td>';
+    for(let c=0;c<10;c++)h+='<td data-nn="'+r+'-'+c+'" class="'+(S.nono[r][c]?"zwart":"")+'"></td>';
+    h+='</tr>';}
+  h+='</table></div>';
+  if(!S.opgelost.P11)h+='<button class="pknop" id="p11check">Controleer het beeld</button><div class="uitkomst" id="p11uit"></div>';
+  else h+='<div class="uitkomst goed">Het beeld is hersteld: de schijf van het messing contragewicht, in doorlicht. '+
+   'Tel de boorgaten in de schijf &mdash; dat aantal is schijf II van de kluis.</div>';
+  return h+hintBalkHTML("P11")+'</div>';
+ },
+ koppel(vel){
+  vel.querySelectorAll("[data-nn]").forEach(td=>td.addEventListener("click",()=>{
+    if(S.opgelost.P11)return;
+    const[r,c]=td.dataset.nn.split("-").map(Number);
+    S.nono[r][c]=S.nono[r][c]?0:1;bewaar();td.classList.toggle("zwart");sfxTik();}));
+  const ck=vel.querySelector("#p11check");
+  if(ck)ck.addEventListener("click",()=>{
+    const u=vel.querySelector("#p11uit");
+    const goed=S.nono.every((rij,r)=>rij.every((v,c)=>v===NONO[r][c]));
+    if(goed){S.opgelost.P11=true;bewaar();sfxGoed();openDoc("D10",true);toast("Het beeld is hersteld.");}
+    else{u.className="uitkomst fout";u.textContent="De vlakken sporen nog niet met de randgetallen.";sfxFout();}});
+ }};
+/* --- P12: subsidieafrekening (kruisgetallen) --- */
+PZ.P12={html(){
+  const rijnamen=["instrumenten","fotomateriaal","bibliotheek"],kolnamen=["kw. I","kw. II","kw. III","kw. IV"];
+  const mis=(r,c)=>KG_MIS.some(m=>m[0]===r&&m[1]===c);
+  let h='<div class="doctekst"><p>De subsidieafrekening over 1957, met rij- en kolomtotalen in de marge. Drie bedragen zijn '+
+  'weggevallen waar het kasboek is overgeplakt. Reken ze terug &mdash; elke rij en elke kolom telt op tot haar totaal.</p>'+
+  '<div style="overflow-x:auto"><table class="docTabel mono" style="text-align:right"><tr><th></th>'+
+  kolnamen.map(k=>'<th style="text-align:right">'+k+'</th>').join("")+'<th style="text-align:right">totaal</th></tr>';
+  for(let r=0;r<3;r++){h+='<tr><td>'+rijnamen[r]+'</td>';
+    for(let c=0;c<4;c++){
+      h+='<td style="text-align:right">'+(mis(r,c)?
+        '<input class="pinvoer" style="max-width:74px;text-align:right" inputmode="numeric" maxlength="3" data-kg="'+r+'-'+c+'" value="'+esc(S.kg[r+"-"+c]||"")+'">':
+        'f '+KG[r][c])+'</td>';}
+    h+='<td style="text-align:right"><b>f '+KG_RTOT[r]+'</b></td></tr>';}
+  h+='<tr><td><b>totaal</b></td>'+KG_CTOT.map(t=>'<td style="text-align:right"><b>f '+t+'</b></td>').join("")+
+  '<td style="text-align:right"><b>f '+KG_RTOT.reduce((a,b)=>a+b,0)+'</b></td></tr></table></div>'+
+  '<p class="citaat" style="font-size:.82rem">Aantekening van de accountant: &ldquo;de kolomtotalen sporen niet met het kasboek van '+
+  'de administrateur &mdash; navragen bij Brand.&rdquo;</p>';
+  if(!S.opgelost.P12)h+='<button class="pknop" id="p12check">Controleer de afrekening</button><div class="uitkomst" id="p12uit"></div>';
+  else h+='<div class="uitkomst goed">De afrekening sluit. Het teruggerekende slotbedraag rechtsonder in kwartaal IV: '+
+   'het l&aacute;&aacute;tste cijfer daarvan is schijf III van de kluis.</div>';
+  return h+hintBalkHTML("P12")+'</div>';
+ },
+ koppel(vel){
+  vel.querySelectorAll("[data-kg]").forEach(inp=>inp.addEventListener("input",()=>{
+    inp.value=inp.value.replace(/[^0-9]/g,"");S.kg[inp.dataset.kg]=inp.value;bewaar();}));
+  const ck=vel.querySelector("#p12check");
+  if(ck)ck.addEventListener("click",()=>{
+    const u=vel.querySelector("#p12uit");
+    const goed=KG_MIS.every(([r,c])=>parseInt(S.kg[r+"-"+c]||"0")===KG[r][c]);
+    if(goed){S.opgelost.P12=true;bewaar();sfxGoed();openDoc("D13",true);toast("De afrekening sluit.");}
+    else{u.className="uitkomst fout";u.textContent="Zo sluiten rijen en kolommen niet op de totalen.";sfxFout();}});
+ }};
+/* --- P16: instrumentenkluis --- */
+PZ.P16={html(){
+  let h='<div class="doctekst"><p>De instrumentenkluis in de koepelzaal: vier messing schijven, elk &eacute;&eacute;n cijfer. Volgens de '+
+  'technische dienst verdeelde Heerdink de combinatie over vier stukken van zijn administratie: de <b>urenstaat</b>, een '+
+  '<b>glasplaat</b>, de <b>afrekening</b> en een <b>blaadje in cijferschrift</b>.</p>';
+  if(S.kluisOpen)h+='<div class="uitkomst goed">De kluis staat open. De draadopname (bijlage 8) ligt voor het grijpen.</div>';
+  else h+='<div class="kluisSchijven">'+["I","II","III","IV"].map(n=>
+    '<div class="kluisSchijf"><label>SCHIJF '+n+'</label><input inputmode="numeric" maxlength="1" data-schijf="'+n+'"></div>').join("")+
+   '</div><button class="pknop" id="p16check">Draai het slot</button><div class="uitkomst" id="p16uit"></div>';
+  return h+hintBalkHTML("P16")+'</div>';
+ },
+ koppel(vel){
+  const ck=vel.querySelector("#p16check");
+  if(ck)ck.addEventListener("click",()=>{
+    const v=["I","II","III","IV"].map(n=>vel.querySelector('[data-schijf="'+n+'"]').value||"").join("");
+    const u=vel.querySelector("#p16uit");
+    if(v===KLUIS){S.kluisOpen=true;bewaar();stempelKlap("KLUIS GEOPEND");sfxGoed();tekenTafel();openDoc("D14",true);toast("De kluis zwaait open.");}
+    else{u.className="uitkomst fout";u.textContent="Het slot blijft star. Ergens draait een schijf verkeerd.";sfxFout();}});
+  vel.querySelectorAll("[data-schijf]").forEach(inp=>inp.addEventListener("input",()=>{inp.value=inp.value.replace(/[^0-9]/g,"");}));
+ }};
+/* ===== CONCLUSIE & EPILOOG ===== */
+function vulConclusie(){
+  const vel=$("conclusieVel");
+  if(S.klaar){toonEpiloog();return;}
+  const namen={dader:"De dader",locatie:"De plaats van de moord",voorwerp:"Het moordwapen",motief:"Het motief"};
+  vel.innerHTML='<div class="velkop"><span class="dnr">CONCLUSIE</span><h2>Het conclusieformulier</h2>'+
+   '<button class="sluit" data-sluit="conclusieOverlay" aria-label="sluiten">\u2715</button></div>'+
+   '<div class="doctekst"><p>Vul het formulier pas in wanneer de bewijsmatrix nog maar &eacute;&eacute;n mogelijkheid per as toelaat. '+
+   'Een onjuiste conclusie wordt afgewezen zonder toelichting.</p>'+
+   Object.keys(ASSEN).map(as=>'<div class="conclrij"><label>'+namen[as].toUpperCase()+'</label>'+
+    '<select class="pselect" data-as="'+as+'"><option value="">&mdash; kies &mdash;</option>'+
+    ASSEN[as].map(o=>'<option>'+esc(o)+'</option>').join("")+'</select></div>').join("")+
+   '<button class="pknop" id="dienIn">Dien de conclusie in</button>'+
+   '<div class="uitkomst" id="conclUit"></div>'+
+   (S.pogingen?'<p class="mono" style="font-size:.72rem;margin-top:.5rem">afgewezen pogingen: '+S.pogingen+'</p>':'')+
+   '</div>';
+  vel.querySelectorAll("[data-sluit]").forEach(b=>b.addEventListener("click",()=>sluitOverlay(b.dataset.sluit)));
+  vel.querySelector("#dienIn").addEventListener("click",beoordeel);
+  openOverlay("conclusieOverlay");vel.scrollTop=0;
+}
+function beoordeel(){
+  const vel=$("conclusieVel"),u=vel.querySelector("#conclUit");
+  const keuze={};let vol=true;
+  vel.querySelectorAll("[data-as]").forEach(s=>{keuze[s.dataset.as]=s.value;if(!s.value)vol=false;});
+  if(!vol){u.className="uitkomst fout";u.textContent="Het formulier is niet volledig ingevuld.";sfxFout();return;}
+  const goed=Object.keys(OPLOSSING).every(as=>keuze[as]===OPLOSSING[as]);
+  if(goed){S.klaar=true;bewaar();stempelKlap("ZAAK GESLOTEN");setTimeout(toonEpiloog,900);}
+  else{S.pogingen++;bewaar();sfxFout();stempelKlap("AFGEWEZEN");
+    u.className="uitkomst fout";
+    u.textContent="De officier van justitie wijst de conclusie af: het bewijs draagt dit niet. Terug naar de matrix.";
+    const p=vel.querySelector(".mono");if(p)p.textContent="afgewezen pogingen: "+S.pogingen;
+    else{const n=document.createElement("p");n.className="mono";n.style.cssText="font-size:.72rem;margin-top:.5rem";
+      n.textContent="afgewezen pogingen: "+S.pogingen;u.after(n);}}
+}
+function toonEpiloog(){
+  const vel=$("conclusieVel");
+  vel.innerHTML='<div class="velkop"><span class="dnr">EPILOOG</span><h2>De Gedoofde Ster \u2014 gesloten</h2>'+
+   '<button class="sluit" data-sluit="conclusieOverlay" aria-label="sluiten">\u2715</button></div>'+
+   '<div class="doctekst">'+
+   '<p><b>Ida Rademaker</b>, de rekenares. In het <b>platenarchief</b>, met het <b>messing contragewicht</b>. '+
+   'Het motief: een <b>gestolen ontdekking</b>.</p>'+
+   '<p>Zij vond de komeet. Niet door een kijker, maar aan de rekentafel: een spoor van lichtpuntjes over drie glasplaten, '+
+   'doorgemeten in haar eigen nachten. Ze legde haar metingen op het bureau van de directeur. Heerdink las ze, knikte \u2014 '+
+   'en sprak zijn aankondiging in op de draadrecorder: <em>de ontdekking is de mijne</em>.</p>'+
+   '<p>Die komeetavond hoorde Rademaker de band, door de openstaande deur van het archief. Toen Heerdink na elven binnenkwam '+
+   'om &ldquo;haar platen&rdquo; op te halen, stond zij tussen de kasten met het contragewicht dat Steenwijk die week had '+
+   'afgeschroefd voor de nieuwe plaathouders. E&eacute;n slag. Daarna draaide zij de koepel om de kijker van het archiefraam '+
+   'weg te richten, sleepte het lichaam naar de koepelzaal, hervatte om 23:40 de belichting alsof er niets was gebeurd \u2014 '+
+   'en borg de recorder op in de instrumentenkluis, waarvan zij als enige de vier cijfers kon raden. Rekenen was haar vak.</p>'+
+   '<h4>De bewijsketen</h4>'+
+   '<div class="feitkaart"><span class="fid">F1</span>'+esc(FEITEN.F1)+'</div>'+
+   '<div class="feitkaart"><span class="fid">F6</span>'+esc(FEITEN.F6)+'</div>'+
+   '<div class="feitkaart"><span class="fid">F7</span>'+esc(FEITEN.F7)+'</div>'+
+   '<div class="feitkaart"><span class="fid">F4</span>'+esc(FEITEN.F4)+'</div>'+
+   '<div class="feitkaart"><span class="fid">F5</span>'+esc(FEITEN.F5)+'</div>'+
+   '<div class="feitkaart"><span class="fid">F2</span>'+esc(FEITEN.F2)+'</div>'+
+   '<div class="feitkaart"><span class="fid">F3</span>'+esc(FEITEN.F3)+'</div>'+
+   '<div class="feitkaart"><span class="fid">F8</span>'+esc(FEITEN.F8)+'</div>'+
+   '<p>Drie sleutels pasten op het archief; twee dragers hadden een alibi. Wat overbleef was de stilste van het huis \u2014 '+
+   'de enige die nooit iets vroeg, omdat zij allang wist wat haar was afgenomen.</p>'+
+   '<div style="text-align:center"><span class="epi-stempel">CONTROLECODE '+CONTROLECODE+'</span></div>'+
+   '<p class="mono" style="font-size:.72rem;text-align:center">controleer deze code desgewenst bij het archief van de reeks</p>'+
+   '</div>';
+  vel.querySelectorAll("[data-sluit]").forEach(b=>b.addEventListener("click",()=>sluitOverlay(b.dataset.sluit)));
+  if(!$("conclusieOverlay").classList.contains("actief"))openOverlay("conclusieOverlay");
+  vel.scrollTop=0;
+}
+/* ===== RESET ===== */
+function vraagReset(){
+  const vel=$("resetVel");
+  vel.innerHTML='<div class="velkop"><span class="dnr">ARCHIEF</span><h2>Opnieuw beginnen?</h2>'+
+   '<button class="sluit" data-sluit="resetDlg" aria-label="sluiten">\u2715</button></div>'+
+   '<div class="doctekst"><p>Alle ingevulde roosters, gevonden woorden, genoteerde feiten en de kluis worden teruggezet. '+
+   'Dit is niet ongedaan te maken.</p>'+
+   '<button class="pknop" id="resetJa">Ja, leg het dossier terug</button> '+
+   '<button class="pknop secundair" data-sluit="resetDlg">Nee, verder speuren</button></div>';
+  vel.querySelectorAll("[data-sluit]").forEach(b=>b.addEventListener("click",()=>sluitOverlay(b.dataset.sluit)));
+  vel.querySelector("#resetJa").addEventListener("click",()=>{
+    const geluid=S.geluid;S=nieuweStaat();S.geluid=geluid;bewaar();
+    lagen=[];docPad=[];
+    document.querySelectorAll(".overlay").forEach(o=>o.classList.remove("actief"));
+    tekenStrip();tekenTafel();toonScherm("omslag");toast("Het dossier ligt weer dicht.");});
+  openOverlay("resetDlg");
+}
+/* ===== INIT ===== */
+function init(){
+  laadStaat();
+  tekenSterren();tekenStrip();tekenTafel();
+  $("knopGeluid").textContent="Geluid: "+(S.geluid?"aan":"uit");
+  $("openZaak").addEventListener("click",()=>{S.fase="bureau";bewaar();toonScherm("bureau");zorgSentinel();
+    if(S.geluid){audio();startAmbience();}});
+  $("knopMatrix").addEventListener("click",openMatrix);
+  $("knopConclusie").addEventListener("click",vulConclusie);
+  $("knopGeluid").addEventListener("click",()=>zetGeluid(!S.geluid));
+  $("knopReset").addEventListener("click",vraagReset);
+  window.addEventListener("popstate",()=>{
+    const iets=stapTerug();sentinel=false;
+    if(iets)zorgSentinel();});
+  document.addEventListener("visibilitychange",()=>{if(document.hidden)bewaar();});
+  if(S.fase==="bureau")toonScherm("bureau");
+  if(S.geluid)$("knopGeluid").textContent="Geluid: aan";
+}
+init();
+</script>
+</body>
+</html>
