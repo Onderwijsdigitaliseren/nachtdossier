@@ -3,12 +3,15 @@
 Een schil rond losse interactieve moordmysteries. Elke zaak is een op zichzelf staand HTML-bestand; `index.html` is alleen de recherchekamer die ernaar linkt.
 
 ## Zaken
-**Kast I · Moordzaken** (verhaalgedreven)
+**Lade I · Murdoku's** (plattegrond-dossiers)
+- `nachtportier.html` — De Nachtportier (vijf zaken, 1949–1954)
+
+**Lade II · Moordzaken** (verhaalgedreven)
 - `MERIDIAAN___Nachtdossier44-C.html` — Villa Meridiaan
 - `nachtfrequentie.html` — Nachtfrequentie (92.4 FM)
 - `nachttrein212.html` — Nachttrein 212 (Amsterdam · Wenen)
 
-**Kast II · Puzzelkamers** (puzzelgedreven)
+**Lade III · Puzzelkamers** (puzzelgedreven)
 - `schakelkamer.html` — De Schakelkamer (Dossier P1, 1963)
 - `ravenhorst.html` — Ravenhorst (landhuis)
 - `de-lichttafel.html` — De Lichttafel (sterrenwacht, 1957)
@@ -25,7 +28,7 @@ Open `index.html`, zoek de `ZAKEN`-array bovenin de `<script>` en voeg één obj
 { type: "verhaal", nummer: "Zaak 03", titel: "...", omschrijving: "...", bestand: "jouwbestand.html", stempel: "Onopgelost" }
 ```
 
-`type` bepaalt de kast: `"verhaal"` (Moordzaken) of `"puzzel"` (Puzzelkamers).
+`type` bepaalt de lade: `"murdoku"` (Lade I), `"verhaal"` (Lade II) of `"puzzel"` (Lade III). De volgorde van de laden staat in de `KASTEN`-array.
 
 Zet het bijbehorende `.html`-bestand ernaast. Klaar.
 
