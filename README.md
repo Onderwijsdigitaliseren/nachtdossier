@@ -5,6 +5,7 @@ Een schil rond losse interactieve moordmysteries. Elke zaak is een op zichzelf s
 ## Zaken
 **Lade I · Murdoku's** (plattegrond-dossiers)
 - `nachtportier.html` — De Nachtportier (vijf zaken, 1949–1954)
+- `grondplan.html` — Het Grondplan (reeks, 1957–1961)
 
 **Lade II · Moordzaken** (verhaalgedreven)
 - `MERIDIAAN___Nachtdossier44-C.html` — Villa Meridiaan
