@@ -17,6 +17,9 @@ Een schil rond losse interactieve moordmysteries. Elke zaak is een op zichzelf s
 - `ravenhorst.html` — Ravenhorst (landhuis)
 - `de-lichttafel.html` — De Lichttafel (sterrenwacht, 1957)
 
+**Lade IV · Kruisroosters** (rasterdossiers)
+- `de-zwarte-kolom.html` — De Zwarte Kolom (drie nachten, november 1958)
+
 ## Online zetten (GitHub Pages)
 1. Zet alle bestanden in de root van je repo.
 2. Repo → **Settings → Pages** → Source: `Deploy from a branch`, branch `main`, map `/root`.
@@ -29,7 +32,7 @@ Open `index.html`, zoek de `ZAKEN`-array bovenin de `<script>` en voeg één obj
 { type: "verhaal", nummer: "Zaak 03", titel: "...", omschrijving: "...", bestand: "jouwbestand.html", stempel: "Onopgelost" }
 ```
 
-`type` bepaalt de lade: `"murdoku"` (Lade I), `"verhaal"` (Lade II) of `"puzzel"` (Lade III). De volgorde van de laden staat in de `KASTEN`-array.
+`type` bepaalt de lade: `"murdoku"` (Lade I), `"verhaal"` (Lade II), `"puzzel"` (Lade III) of `"kruisrooster"` (Lade IV). De volgorde van de laden staat in de `KASTEN`-array.
 
 Zet het bijbehorende `.html`-bestand ernaast. Klaar.
 

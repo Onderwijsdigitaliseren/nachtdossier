@@ -140,6 +140,7 @@ body:not(.lamp-aan) #kaart{transform:rotate(-.6deg) translateY(10px)}
 body.lamp-aan .lade{opacity:1;transform:translateY(0)}
 body.lamp-aan .lade:nth-of-type(2){transition-delay:1.05s}
 body.lamp-aan .lade:nth-of-type(3){transition-delay:1.2s}
+body.lamp-aan .lade:nth-of-type(4){transition-delay:1.35s}
 /* ladefront met handgreep en etiketvenster */
 .ladeFront{
   position:relative;
@@ -429,7 +430,7 @@ const KOFFIE_LINK = "https://ko-fi.com/kellievdk";
 
 /* ================================================================
    ZAKEN — voeg hier een zaak toe: één object, klaar.
-   type: "verhaal" (moordzaak), "puzzel" (puzzelkamer) of "murdoku".
+   type: "murdoku", "verhaal" (moordzaak), "puzzel" (puzzelkamer) of "kruisrooster".
    bestand = relatief pad naar het losse html-bestand (GitHub Pages).
    ================================================================ */
 const ZAKEN = [
@@ -496,6 +497,14 @@ const ZAKEN = [
     omschrijving: "Vijf plattegronden, vijf zaken — van pension De Karekiet in 1957 tot vier jaar later. Wie waar stond bepaalt wie het deed.",
     bestand: "grondplan.html",
     stempel: "Reeks"
+  },
+  {
+    type: "kruisrooster",
+    nummer: "Drie nachten · november 1958",
+    titel: "De Zwarte Kolom",
+    omschrijving: "Bij dagblad De Nieuwe Wacht wordt een katern van acht pagina’s uit de persen gehaald dat op geen enkele planning staat. In de drie nachten daarna valt er drie keer een dode. Geen getuige, geen bekentenis — alleen een rooster: elke verdachte hoort bij precies één voorwerp en precies één plek. Streep weg wat niet kan.",
+    bestand: "de-zwarte-kolom.html",
+    stempel: "Onopgelost"
   }
 ];
 
@@ -503,7 +512,8 @@ const ZAKEN = [
 const KASTEN = [
   { type: "murdoku", label: "Lade I · Murdoku’s", uitleg: "Plattegrond-dossiers: plaats iedereen in het juiste vertrek, rij voor rij en kolom voor kolom — tot alleen de dader overblijft." },
   { type: "verhaal", label: "Lade II · Moordzaken", uitleg: "Voor wie het verhaal in wil: verhoor de verdachten, vind het bewijs, dien je aanklacht in." },
-  { type: "puzzel", label: "Lade III · Puzzelkamers", uitleg: "Voor wie liever kraakt dan verhoort: codes, documenten en deuren die niet zomaar opengaan." }
+  { type: "puzzel", label: "Lade III · Puzzelkamers", uitleg: "Voor wie liever kraakt dan verhoort: codes, documenten en deuren die niet zomaar opengaan." },
+  { type: "kruisrooster", label: "Lade IV · Kruisroosters", uitleg: "Rasterdossiers: elke verdachte hoort bij precies één voorwerp en één plek. Streep weg wat niet kan, tot er één naam overblijft." }
 ];
 
 function maakDossier(zaak){
