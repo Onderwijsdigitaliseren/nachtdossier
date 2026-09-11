@@ -125,6 +125,49 @@ body:not(.lamp-aan) #kaart{transform:rotate(-.6deg) translateY(10px)}
   grid-template-columns:repeat(auto-fit,minmax(290px,1fr));
   gap:52px 44px;
 }
+/* ---- intro ---- */
+#intro{
+  position:relative;
+  z-index:2;
+  width:min(860px,100%);
+  margin:0 auto 8vh;
+  opacity:0;
+  transition:opacity 1.3s ease .95s;
+}
+body.lamp-aan #intro{opacity:1}
+.introLead{
+  font-size:14px;
+  line-height:1.85;
+  color:rgba(230,217,184,.78);
+  text-align:center;
+  max-width:62ch;
+  margin:0 auto;
+}
+.introGrid{
+  margin-top:34px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(215px,1fr));
+  gap:26px 34px;
+}
+.introVak{
+  border-left:2px solid rgba(156,132,82,.45);
+  padding-left:16px;
+}
+.introKop{
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.26em;
+  text-transform:uppercase;
+  color:var(--manilla);
+}
+.introVak p{
+  margin-top:10px;
+  font-size:12.5px;
+  line-height:1.72;
+  color:rgba(217,188,130,.62);
+}
+.introVak b{color:rgba(233,214,170,.9);font-weight:700}
+@media (prefers-reduced-motion:reduce){#intro{transition:none}}
 /* ---- archieflade ---- */
 .lade{
   position:relative;
@@ -410,6 +453,27 @@ body.lamp-aan #koffiekas{opacity:1}
     <div class="sub">Afdeling onopgeloste zaken &mdash; nachtdienst</div>
     <div class="regel">De lamp brandt. De dossiers liggen klaar. Wie een map opent, neemt de zaak over &mdash; met alles wat daarbij hoort.</div>
   </header>
+  <section id="intro" aria-label="Over het archief">
+    <p class="introLead">Stap het nachtdossier binnen en onderzoek elf fictieve zaken, gratis en online. Bekijk het bewijs, vind wat verborgen bleef, hoor de verdachten en beslis wat er werkelijk is gebeurd. De lamp brandt. Wie een map opent, neemt de zaak over — met alles wat daarbij hoort.</p>
+    <div class="introGrid">
+      <div class="introVak">
+        <div class="introKop">Wat dit is</div>
+        <p>Elf zelfstandige rechercheraadsels voor één speler. Gratis, geen account, niets te downloaden — alles draait in je browser.</p>
+      </div>
+      <div class="introVak">
+        <div class="introKop">Hoe het werkt</div>
+        <p>Lees de verklaringen, leg de verbanden, wijs de dader aan. Een zaak kost drie kwartier tot een paar uur; je voortgang blijft in deze browser bewaard.</p>
+      </div>
+      <div class="introVak">
+        <div class="introKop">Waar te beginnen</div>
+        <p>Nieuw bij de nachtdienst? Neem <b>Halvemaan</b> — één nacht, één antwoord. De murdoku’s in Lade I zijn het diepe.</p>
+      </div>
+      <div class="introVak">
+        <div class="introKop">Waarom vannacht</div>
+        <p>Elke zaak heeft precies één oplossing, en de aanwijzingen geven je precies genoeg. Niemand komt je helpen. Dat is de aardigheid.</p>
+      </div>
+    </div>
+  </section>
   <section id="dossiers" aria-label="Dossiers"></section>
   <section id="koffiekas" aria-label="Steun het archief" hidden>
     <div class="kring"></div>
@@ -434,6 +498,22 @@ const KOFFIE_LINK = "https://ko-fi.com/kellievdk";
    bestand = relatief pad naar het losse html-bestand (GitHub Pages).
    ================================================================ */
 const ZAKEN = [
+  {
+    type: "verhaal",
+    nummer: "Dossier 17-B · 02:40",
+    titel: "Halvemaan",
+    omschrijving: "Apotheek De Halvemaan, november 1961. Het regent al uren. De huisarts heeft “hartfalen” getekend en is naar huis — jij niet.",
+    bestand: "halvemaan.html",
+    stempel: "Onopgelost"
+  },
+  {
+    type: "verhaal",
+    nummer: "Dossier 23-Z · 04:10",
+    titel: "Zeezicht",
+    omschrijving: "Badhotel Zeezicht, oktober 1958, laatste weekend van het seizoen. Storm op zee, het hotel gesloten, de gasten vertrokken. Op één na.",
+    bestand: "zeezicht.html",
+    stempel: "Onopgelost"
+  },
   {
     type: "verhaal",
     nummer: "Dossier 44-C · 03:12",

@@ -8,6 +8,8 @@ Een schil rond losse interactieve moordmysteries. Elke zaak is een op zichzelf s
 - `grondplan.html` — Het Grondplan (reeks, 1957–1961)
 
 **Lade II · Moordzaken** (verhaalgedreven)
+- `halvemaan.html` — Halvemaan (apotheek, november 1961)
+- `zeezicht.html` — Zeezicht (badhotel, oktober 1958)
 - `MERIDIAAN___Nachtdossier44-C.html` — Villa Meridiaan
 - `nachtfrequentie.html` — Nachtfrequentie (92.4 FM)
 - `nachttrein212.html` — Nachttrein 212 (Amsterdam · Wenen)
